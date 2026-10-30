@@ -1,16 +1,15 @@
 # Team Progress & To-Do List
 
 ## Reviews 
-- Unofficial Gate_0 review: 17-09-26 
+- Gate 0: 05-11-26
+- Gate 1: 05-11-26
+- Sprint 1: 05-11-26
 
 ## Completed tasks
-- Gate_0 ppt and doc
-- Stakeholder interview 
-- Finding suitable dataset 
+- Gate_0 ppt and word
+- Gate_1 ppt and word
 
 ## Things to be done 
-- Permission letter
-- Review functional and non-functional requirements
-- Research papers
-- KPIs
-- Generate appropriate dataset 
+- Sprint 1 doc 
+- Non functional requirements 
+- Revise Gate_0 ppt 
