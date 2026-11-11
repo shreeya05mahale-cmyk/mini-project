@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - KLE Tech Asset & Procurement</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="form-screen">
+    <!-- Header -->
+    <div class="label">KLE TECH INFOCELL</div>
+    <h1 class="h1">Welcome back</h1>
+    <p class="sub-text">IT Asset Inventory & Procurement Portal</p>
+
+    <!-- Error message display (hidden by default) -->
+    <div id="login-alert" class="error-text" style="display: none;">
+      <span id="login-alert-text">Invalid email or password</span>
+    </div>
+
+    <!-- Form -->
+    <form id="login-form">
+      <div class="input-group">
+        <label for="email" class="input-label">University Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          class="input" 
+          placeholder="e.g. hod.cs@kletech.ac.in" 
+          required 
+          autocomplete="email"
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="password" class="input-label">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          class="input" 
+          placeholder="••••••••" 
+          required 
+          autocomplete="current-password"
+        >
+      </div>
+
+      <button type="submit" id="submit-btn" class="btn btn-primary">
+        Sign In
+      </button>
+    </form>
+
+    <!-- Demo Role Selector (Convenient for quick viva demos) -->
+    <div class="quick-login-section">
+      <div class="quick-login-title">Choose to login as</div>
+      <div class="quick-roles">
+        <button type="button" class="role-pill" data-email="hod.cs@kletech.ac.in">HOD </button>
+        <button type="button" class="role-pill" data-email="coordinator@kletech.ac.in">Coordinator</button>
+        <button type="button" class="role-pill" data-email="registrar@kletech.ac.in">Registrar</button>
+        <button type="button" class="role-pill" data-email="vc@kletech.ac.in">VC</button>
+        <button type="button" class="role-pill" data-email="store@kletech.ac.in">Store</button>
+        <button type="button" class="role-pill" data-email="admin@kletech.ac.in">Admin</button>
+      </div>
+    </div>
+
+    <!-- Help text / footer -->
+    <div class="help-text">
+      InfoCell IT Department &bull; <a href="#">KLE Tech University</a>
+    </div>
+  </div>
+
+  <script src="/js/login.js"></script>
+</body>
+</html>
