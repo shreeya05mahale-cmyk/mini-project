@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server/app.js",
     "seed": "node scripts/seed.js",
+    "clear:data": "node scripts/clear-operational-data.js",
     "test:concurrency": "node scripts/concurrency-test.js"
   },
   "dependencies": {

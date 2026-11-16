@@ -61,8 +61,12 @@ app.get('/api/health', async (req, res, next) => {
   }
 });
 
-// Placeholder for future API routes (auth, requests, approvals, suppliers, quotations, POs, receipts, inventory, reports)
-// They will be mounted here in subsequent phases
+// API Routes (Engine 4)
+const authRoutes = require('./routes/authRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // 404 handler for unknown API endpoints
 app.use('/api/*', (req, res) => {

@@ -42,6 +42,8 @@
   /* Elevation */
   --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   --btn-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+  --sidebar-width: 250px;
+  --header-height: 64px;
 }
 
 * {
@@ -55,36 +57,54 @@ body {
   background: var(--bg-gradient);
   color: var(--text-main);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Login Page Body Centering */
+body.login-body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 20px 14px;
-  -webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 768px) {
+  body.login-body {
+    align-items: center;
+    padding: 40px;
+  }
 }
 
 /* ==========================================================================
-   MAIN CARD / FORM SCREEN
+   APP SHELL LAYOUT (Header + Sidebar + Content)
    ========================================================================== */
 
-.form-screen {
-  width: 100%;
-  max-width: 440px;
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* TOP HEADER */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
   background: var(--surface);
-  padding: 28px 22px;
-  border-radius: 18px;
-  box-shadow: var(--card-shadow);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-/* ==========================================================================
-   HEADER
-   ========================================================================== */
-
-.brand-row {
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .brand-badge {
@@ -100,6 +120,333 @@ body {
   font-weight: 800;
   font-size: 16px;
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+
+.brand-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-info {
+  text-align: right;
+  line-height: 1.25;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+.user-role-dept {
+  font-size: 12px;
+  color: var(--text-subtle);
+}
+
+/* SIDEBAR NAVIGATION */
+.app-sidebar {
+  width: var(--sidebar-width);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: var(--header-height);
+  bottom: 0;
+  left: 0;
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 90;
+}
+
+.nav-section-title {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  font-weight: 700;
+  padding: 8px 12px;
+  margin-top: 8px;
+}
+
+.nav-menu {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.nav-item a:hover {
+  background: var(--surface-subtle);
+  color: var(--brand-primary);
+}
+
+.nav-item.active a {
+  background: var(--brand-light);
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+
+.nav-badge {
+  background: var(--brand-primary);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.nav-badge-pending {
+  background: var(--status-pending-text);
+}
+
+/* MAIN CONTENT AREA */
+.app-main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  margin-top: var(--header-height);
+  padding: 28px;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.page-header {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page-title {
+  font-family: var(--font-heading);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--text-subtle);
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   CARDS & STATS
+   ========================================================================== */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 24px;
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 16px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px 22px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-subtle);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.stat-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* ==========================================================================
+   DATA TABLES
+   ========================================================================== */
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13.5px;
+}
+
+.data-table th {
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.data-table tbody tr:hover {
+  background-color: #fafbfd;
+}
+
+/* ==========================================================================
+   BADGES & PILLS
+   ========================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.badge-approved { background: var(--status-approved-bg); color: var(--status-approved-text); }
+.badge-pending  { background: var(--status-pending-bg);  color: var(--status-pending-text); }
+.badge-rejected { background: var(--status-rejected-bg); color: var(--status-rejected-text); }
+.badge-ordered  { background: var(--status-ordered-bg);  color: var(--status-ordered-text); }
+.badge-completed{ background: #e0f2fe; color: #0284c7; }
+
+/* ==========================================================================
+   BUTTONS & CONTROLS
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--brand-gradient);
+  color: white;
+  box-shadow: var(--btn-shadow);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-subtle);
+  color: var(--text-main);
+}
+
+.btn-sm {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 12.5px;
+  border-radius: 8px;
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==========================================================================
+   LOGIN SCREEN FORM
+   ========================================================================== */
+
+.form-screen {
+  width: 100%;
+  max-width: 440px;
+  background: var(--surface);
+  padding: 28px 22px;
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .label {
@@ -124,10 +471,6 @@ body {
   color: var(--text-subtle);
   margin-top: 6px;
 }
-
-/* ==========================================================================
-   INPUTS
-   ========================================================================== */
 
 .input-group {
   margin-top: 18px;
@@ -161,66 +504,6 @@ body {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-/* ==========================================================================
-   LINKS
-   ========================================================================== */
-
-.link {
-  font-size: 13px;
-  color: var(--brand-primary);
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-.link:hover {
-  text-decoration: underline;
-  color: var(--brand-hover);
-}
-
-.link-end {
-  margin-top: 8px;
-  text-align: right;
-}
-
-/* ==========================================================================
-   BUTTONS
-   ========================================================================== */
-
-.btn {
-  width: 100%;
-  height: 50px;
-  border: none;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 20px;
-  font-family: var(--font-body);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-}
-
-.btn-primary {
-  background: var(--brand-gradient);
-  color: white;
-  box-shadow: var(--btn-shadow);
-}
-
-.btn-primary:hover {
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
-  transform: translateY(-1px);
-}
-
-.btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ==========================================================================
-   ERROR & ALERTS
-   ========================================================================== */
-
 .error-text {
   color: #ef4444;
   margin-top: 10px;
@@ -231,10 +514,6 @@ body {
   padding: 8px 12px;
   border-radius: 8px;
 }
-
-/* ==========================================================================
-   VIVA QUICK ROLE SELECTOR (Clean, matched to palette)
-   ========================================================================== */
 
 .quick-login-section {
   margin-top: 24px;
@@ -279,10 +558,6 @@ body {
   transform: translateY(-1px);
 }
 
-/* ==========================================================================
-   HELP TEXT / FOOTER
-   ========================================================================== */
-
 .help-text {
   text-align: center;
   font-size: 13px;
@@ -302,27 +577,25 @@ body {
 }
 
 /* ==========================================================================
-   RESPONSIVENESS (Matches your CSS breakpoints)
+   RESPONSIVE DESIGN FOR APP SHELL
    ========================================================================== */
 
-@media (max-width: 380px) {
-  .h1 {
-    font-size: 24px;
+@media (max-width: 900px) {
+  .app-sidebar {
+    width: 200px;
   }
-  .form-screen {
-    padding: 22px 16px;
+  .app-main {
+    margin-left: 200px;
+    padding: 20px;
   }
 }
 
-@media (min-width: 768px) {
-  body {
-    align-items: center;
-    padding: 40px;
+@media (max-width: 720px) {
+  .app-sidebar {
+    display: none; /* Mobile view can toggle or adapt */
   }
-  .form-screen {
-    padding: 38px 32px;
-  }
-  .h1 {
-    font-size: 32px;
+  .app-main {
+    margin-left: 0;
+    padding: 16px;
   }
 }
