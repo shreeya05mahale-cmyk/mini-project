@@ -11,6 +11,8 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 const { pool, query } = require('./db');
 
 const app = express();
@@ -45,6 +47,56 @@ app.use(
 // Since frontend and backend are served from the same origin, no CORS is needed
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Swagger UI - Interactive API Documentation
+// Access at: http://localhost:3000/api-docs
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: 'KLE Tech API Docs',
+    customCss: `
+      .topbar { background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important; }
+      .topbar-wrapper .link { color: #ffffff; font-weight: 700; }
+      .swagger-ui .info .title { font-size: 2rem; }
+    `,
+    swaggerOptions: {
+      docExpansion: 'list', // Show all tag groups collapsed by default
+      persistAuthorization: true
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/health:
+ *   get:
+ *     summary: Server & database health check
+ *     description: Verifies that the Express server is running and PostgreSQL connection is active.
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: System is operational
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 status:
+ *                   type: string
+ *                   example: UP
+ *                 database:
+ *                   type: object
+ *                   properties:
+ *                     database_name:
+ *                       type: string
+ *                       example: kle_asset_db
+ *                     current_time:
+ *                       type: string
+ *                       format: date-time
+ */
 // Health check endpoint to verify server and database connectivity
 app.get('/api/health', async (req, res, next) => {
   try {
@@ -61,12 +113,14 @@ app.get('/api/health', async (req, res, next) => {
   }
 });
 
-// API Routes (Engine 4)
+// API Routes (Engine 4 & Engine 2)
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const assetRoutes = require('./routes/assetRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/assets', assetRoutes);
 
 // 404 handler for unknown API endpoints
 app.use('/api/*', (req, res) => {
@@ -99,7 +153,8 @@ if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`====================================================`);
     console.log(` KLE Tech Asset & Procurement System Server Running`);
-    console.log(` URL: http://localhost:${PORT}`);
+    console.log(` URL:      http://localhost:${PORT}`);
+    console.log(` API Docs: http://localhost:${PORT}/api-docs`);
     console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`====================================================`);
   });

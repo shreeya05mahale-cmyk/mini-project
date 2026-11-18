@@ -172,7 +172,8 @@ CREATE TABLE assets (
     location VARCHAR(100),
     condition VARCHAR(20) NOT NULL DEFAULT 'NEW'
         CHECK (condition IN ('NEW', 'GOOD', 'FAIR', 'DAMAGED', 'DISPOSED')),
-    quantity INT NOT NULL CHECK (quantity >= 0)
+    quantity INT NOT NULL CHECK (quantity >= 0),
+    specifications JSONB
 );
 
 -- ----------------------------------------------------------------------------

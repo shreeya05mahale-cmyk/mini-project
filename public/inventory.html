@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory & Asset Registry - KLE Tech Asset & Procurement</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter-select, .search-input {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: #ffffff;
+      color: var(--text-main);
+      outline: none;
+    }
+    .filter-select:focus, .search-input:focus {
+      border-color: var(--brand-primary);
+    }
+    .badge-good {
+      background: #dcfce7;
+      color: #15803d;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-damaged {
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .clickable-row {
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .clickable-row:hover {
+      background: #f1f5f9;
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(2px);
+    }
+    .modal-card {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      width: 90%;
+      max-width: 620px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 85vh;
+    }
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+    }
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--text-subtle);
+    }
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .spec-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .spec-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .spec-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-subtle);
+      font-weight: 600;
+    }
+    .spec-val {
+      font-size: 14px;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container" class="app-wrapper">
+    <main class="app-main">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Inventory & Asset Registry</h1>
+          <p class="page-subtitle">Department of Computer Science & Engineering &bull; Lab Desktop Machines</p>
+        </div>
+      </div>
+
+      <!-- Quick Summary Cards -->
+      <div class="stats-grid" style="margin-bottom: 24px;">
+        <div class="stat-card">
+          <div class="stat-label">Total Desktop PCs</div>
+          <div class="stat-value" id="summary-total">-</div>
+          <div class="stat-desc">Imported from physical lab registers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Operational (Working)</div>
+          <div class="stat-value" id="summary-working" style="color: #15803d;">-</div>
+          <div class="stat-desc">In good working condition</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Maintenance / Damaged</div>
+          <div class="stat-value" id="summary-damaged" style="color: #b91c1c;">-</div>
+          <div class="stat-desc">Requires service or repair</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Department</div>
+          <div class="stat-value" style="font-size: 18px; margin-top: 6px;">CSE</div>
+          <div class="stat-desc">Computer Science & Engineering</div>
+        </div>
+      </div>
+
+      <!-- Controls & Filter Bar -->
+      <div class="card" style="padding: 16px 20px; margin-bottom: 20px;">
+        <div class="filter-bar" style="margin-bottom: 0;">
+          <div class="filter-item" style="flex: 1; min-width: 220px;">
+            <input 
+              type="text" 
+              id="search-input" 
+              class="search-input" 
+              placeholder="Search by Computer Name or Model..." 
+              style="width: 100%;"
+            >
+          </div>
+          
+          <div class="filter-item">
+            <label class="filter-label" style="font-size: 12px; font-weight: 600; color: var(--text-subtle);">Lab:</label>
+            <select id="lab-select" class="filter-select">
+              <option value="">All Labs (286 PCs)</option>
+              <option value="Lab 1">Lab 1 (43 PCs)</option>
+              <option value="Lab-2">Lab 2 (62 PCs)</option>
+              <option value="Lab-3">Lab 3 (45 PCs)</option>
+              <option value="LAB 4">Lab 4 (43 PCs)</option>
+              <option value="Lab5">Lab 5 (43 PCs)</option>
+              <option value="Lab-7">Lab 7 (46 PCs)</option>
+              <option value="Computing">C-Lab 1 (1 PC)</option>
+              <option value="C-Lab">C-Lab 2 (3 PCs)</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label class="filter-label" style="font-size: 12px; font-weight: 600; color: var(--text-subtle);">Status:</label>
+            <select id="condition-select" class="filter-select">
+              <option value="">All Statuses</option>
+              <option value="GOOD">Working (GOOD)</option>
+              <option value="DAMAGED">Not Working (DAMAGED)</option>
+            </select>
+          </div>
+
+          <button id="reset-btn" class="btn btn-secondary btn-sm" style="padding: 8px 14px;">Reset Filters</button>
+        </div>
+      </div>
+
+      <!-- Assets Table Card -->
+      <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 class="card-title">Asset Units</h2>
+          <div id="results-count" style="font-size: 13px; color: var(--text-subtle);">Showing 0 records</div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Asset Code (Computer Name)</th>
+                <th>Make & Model</th>
+                <th>Lab / Location</th>
+                <th>Supplier / Vendor</th>
+                <th>Inward Reg. No</th>
+                <th>Unit Cost</th>
+                <th>Condition</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="assets-tbody">
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 32px; color: var(--text-subtle);">
+                  Loading assets registry...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div id="pagination-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-top: 1px solid var(--border-color); font-size: 13px;">
+          <button id="prev-btn" class="btn btn-secondary btn-sm" disabled>&larr; Previous</button>
+          <span id="page-indicator" style="color: var(--text-subtle);">Page 1 of 1</span>
+          <button id="next-btn" class="btn btn-secondary btn-sm" disabled>Next &rarr;</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Asset Details Modal -->
+  <div id="asset-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-asset-code">Asset Details</div>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="spec-grid">
+          <div class="spec-item">
+            <span class="spec-label">Machine Name</span>
+            <span class="spec-val" id="m-name">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Lab / Location</span>
+            <span class="spec-val" id="m-location">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Processor</span>
+            <span class="spec-val" id="m-processor">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Generation</span>
+            <span class="spec-val" id="m-gen">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">RAM & Type</span>
+            <span class="spec-val" id="m-ram">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Storage (HDD / SSD)</span>
+            <span class="spec-val" id="m-hdd">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Monitor</span>
+            <span class="spec-val" id="m-monitor">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Operating System</span>
+            <span class="spec-val" id="m-os">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Licensed Windows</span>
+            <span class="spec-val" id="m-licensed">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Antivirus Protected</span>
+            <span class="spec-val" id="m-antivirus">-</span>
+          </div>
+          <div class="spec-item" style="grid-column: span 2; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
+            <span class="spec-label" style="color: var(--brand-primary); font-weight: 700;">University Inward Register Provenance</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Vendor / Supplier</span>
+            <span class="spec-val" id="m-vendor">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Register Entry No</span>
+            <span class="spec-val" id="m-regno">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Invoice / Bill No</span>
+            <span class="spec-val" id="m-billno">-</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Purchase Date & Cost</span>
+            <span class="spec-val" id="m-cost">-</span>
+          </div>
+          <div class="spec-item" style="grid-column: span 2;">
+            <span class="spec-label">Remarks from Register</span>
+            <span class="spec-val" id="m-remarks">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/inventory.js"></script>
+</body>
+</html>
