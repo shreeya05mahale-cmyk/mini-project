@@ -21,9 +21,19 @@ async function getAssets(req, res, next) {
 
     // Filter by lab / location
     if (lab) {
-      conditions.push(`(a.location ILIKE $${paramIndex} OR a.specifications->>'lab' ILIKE $${paramIndex})`);
-      params.push(`%${lab}%`);
-      paramIndex++;
+      if (lab === 'C-Lab 1') {
+        conditions.push(`(a.location ILIKE '%Computing%' OR a.location ILIKE '%C-Lab 1%')`);
+      } else if (lab === 'C-Lab 2') {
+        conditions.push(`(a.location ILIKE '%C-Lab%' OR a.location = 'Ms. Salma M B')`);
+      } else if (lab === 'Lab 7') {
+        conditions.push(`(a.location ILIKE '%Lab-7%' OR a.location IN ('Mr. Ashok Chikaraddi', 'Mr. Pradeep Shet', 'Ms. Neha Panchal', 'Ms. Shrusti Gunjal'))`);
+      } else if (lab === 'Lab 2') {
+        conditions.push(`(a.location ILIKE '%Lab-2%' OR a.location ILIKE '%CLH%')`);
+      } else {
+        conditions.push(`a.location ILIKE $${paramIndex}`);
+        params.push(`%${lab}%`);
+        paramIndex++;
+      }
     }
 
     // Filter by condition (GOOD, DAMAGED, etc.)
