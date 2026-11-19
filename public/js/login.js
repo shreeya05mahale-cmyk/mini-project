@@ -14,15 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const alertText = document.getElementById('login-alert-text');
   const rolePills = document.querySelectorAll('.role-pill');
 
-  // Shared development password for testing all roles
-  const DEV_PASSWORD = 'password123';
-
-  // Handle Quick-Fill Role Pills for quick testing & viva presentation
+  // Handle Quick-Fill Role Pills: fills ONLY the email and puts cursor into password field
   rolePills.forEach(pill => {
     pill.addEventListener('click', () => {
       const email = pill.getAttribute('data-email');
       emailInput.value = email;
-      passwordInput.value = DEV_PASSWORD;
+      passwordInput.value = ''; // Leave password empty so the user enters it
+      passwordInput.focus();   // Focus directly into password box for smooth typing
       hideAlert();
       // Highlight selected pill briefly
       pill.style.transform = 'scale(0.95)';
