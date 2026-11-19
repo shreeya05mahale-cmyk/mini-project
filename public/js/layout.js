@@ -47,7 +47,6 @@ function renderHeader(user) {
 
   header.innerHTML = `
     <div class="header-brand">
-      <div class="brand-badge">K</div>
       <div>
         <div class="brand-title">KLE TECH INFOCELL</div>
         <div style="font-size: 11px; color: var(--text-subtle); letter-spacing: 0.5px;">IT Asset & Procurement System</div>
