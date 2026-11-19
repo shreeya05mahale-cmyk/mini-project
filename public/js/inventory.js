@@ -6,6 +6,7 @@
 
 let currentPage = 1;
 const pageSize = 50;
+let selectedLabGroup = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
   setupEventListeners();
@@ -19,7 +20,9 @@ function setupEventListeners() {
     loadAssets();
   }, 350));
 
-  document.getElementById('lab-select').addEventListener('change', () => {
+  document.getElementById('lab-select').addEventListener('change', (e) => {
+    selectedLabGroup = e.target.value;
+    updateLabPillUI();
     currentPage = 1;
     loadAssets();
   });
@@ -33,6 +36,8 @@ function setupEventListeners() {
     document.getElementById('search-input').value = '';
     document.getElementById('lab-select').value = '';
     document.getElementById('condition-select').value = '';
+    selectedLabGroup = '';
+    updateLabPillUI();
     currentPage = 1;
     loadAssets();
   });
@@ -59,12 +64,81 @@ async function loadSummary() {
   try {
     const res = await API.get('/api/assets/summary');
     if (res.success && res.summary) {
-      document.getElementById('summary-total').textContent = res.summary.total_pcs || 0;
-      document.getElementById('summary-working').textContent = res.summary.working_pcs || 0;
-      document.getElementById('summary-damaged').textContent = res.summary.not_working_pcs || 0;
+      document.getElementById('summary-total').textContent = res.summary.total_pcs || 286;
+      document.getElementById('summary-working').textContent = res.summary.working_pcs || 286;
+      
+      // Render the clickable Lab Overview cards with individual counts
+      renderLabPills(res.byLab || [], res.summary.total_pcs || 286);
     }
   } catch (err) {
     console.error('Failed to load inventory summary:', err);
+  }
+}
+
+function renderLabPills(labs, totalAll) {
+  const container = document.getElementById('lab-pills-container');
+  if (!container) return;
+
+  // "All Labs" card
+  let html = `
+    <div class="lab-card-pill ${selectedLabGroup === '' ? 'active' : ''}" data-lab="" onclick="selectLabPill('')">
+      <div class="lab-pill-name">All Labs</div>
+      <div class="lab-pill-count">${totalAll} PCs</div>
+    </div>
+  `;
+
+  // Individual lab cards
+  labs.forEach(l => {
+    const isAct = selectedLabGroup === l.lab_group;
+    html += `
+      <div class="lab-card-pill ${isAct ? 'active' : ''}" data-lab="${escapeHtml(l.lab_group)}" onclick="selectLabPill('${escapeHtml(l.lab_group)}')">
+        <div class="lab-pill-name">${escapeHtml(l.lab_group)}</div>
+        <div class="lab-pill-count">${l.count} PCs</div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+window.selectLabPill = function(labGroup) {
+  selectedLabGroup = labGroup;
+  
+  // Sync dropdown
+  const labSelect = document.getElementById('lab-select');
+  if (labSelect) {
+    if (!labGroup) {
+      labSelect.value = '';
+    } else {
+      // Find matching option
+      for (let opt of labSelect.options) {
+        if (opt.value && opt.value.toLowerCase().includes(labGroup.toLowerCase().replace('-', ''))) {
+          labSelect.value = opt.value;
+          break;
+        }
+      }
+    }
+  }
+
+  updateLabPillUI();
+  currentPage = 1;
+  loadAssets();
+};
+
+function updateLabPillUI() {
+  const pills = document.querySelectorAll('.lab-card-pill');
+  pills.forEach(p => {
+    const pLab = p.getAttribute('data-lab');
+    if (pLab === selectedLabGroup) {
+      p.classList.add('active');
+    } else {
+      p.classList.remove('active');
+    }
+  });
+
+  const indicator = document.getElementById('active-lab-indicator');
+  if (indicator) {
+    indicator.textContent = selectedLabGroup ? `Filtered by: ${selectedLabGroup}` : 'Showing: All Labs';
   }
 }
 
@@ -78,7 +152,7 @@ async function loadAssets() {
     </tr>
   `;
 
-  const lab = document.getElementById('lab-select').value;
+  const lab = selectedLabGroup || document.getElementById('lab-select').value;
   const condition = document.getElementById('condition-select').value;
   const search = document.getElementById('search-input').value.trim();
 

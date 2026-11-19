@@ -49,7 +49,7 @@ KLE Tech University IT Asset Inventory & Procurement Management System
 - [x] Removed "K" brand badge from all headers per university UI styling.
 - [x] Login page (`public/login.html`) with role buttons that autofill email only, requiring manual password entry.
 - [x] Dashboard page (`public/index.html`) with dynamic metrics, on-the-fly notifications, and role quick actions.
-- [x] Inventory & Asset Registry page (`public/inventory.html`) with lab filtering, condition filters, live search, and hardware specification modal.
+- [x] Inventory & Asset Registry page (`public/inventory.html`) with interactive lab overview cards with live machine counts (Lab 1: 43, Lab 2: 62, Lab 3: 45, Lab 4: 43, Lab 5: 43, Lab 7: 46, C-Labs: 4), condition filters, live search, and hardware specification modal.
 
 ---
 

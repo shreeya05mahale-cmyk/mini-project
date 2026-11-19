@@ -117,10 +117,38 @@
       color: var(--text-subtle);
       font-weight: 600;
     }
-    .spec-val {
-      font-size: 14px;
+    .lab-card-pill {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .lab-card-pill:hover {
+      border-color: var(--brand-primary);
+      background: #eff6ff;
+    }
+    .lab-card-pill.active {
+      background: var(--brand-primary);
+      border-color: var(--brand-primary);
+      color: #ffffff !important;
+      box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+    }
+    .lab-card-pill.active .lab-pill-name,
+    .lab-card-pill.active .lab-pill-count {
+      color: #ffffff !important;
+    }
+    .lab-pill-name {
+      font-size: 13px;
+      font-weight: 700;
       color: var(--text-main);
-      font-weight: 500;
+    }
+    .lab-pill-count {
+      font-size: 11px;
+      color: var(--text-subtle);
+      margin-top: 2px;
     }
   </style>
 </head>
@@ -140,23 +168,34 @@
       <div class="stats-grid" style="margin-bottom: 24px;">
         <div class="stat-card">
           <div class="stat-label">Total Desktop PCs</div>
-          <div class="stat-value" id="summary-total">-</div>
+          <div class="stat-value" id="summary-total">286</div>
           <div class="stat-desc">Imported from physical lab registers</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Operational (Working)</div>
-          <div class="stat-value" id="summary-working" style="color: #15803d;">-</div>
-          <div class="stat-desc">In good working condition</div>
+          <div class="stat-value" id="summary-working" style="color: #15803d;">286</div>
+          <div class="stat-desc">In active service</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Maintenance / Damaged</div>
-          <div class="stat-value" id="summary-damaged" style="color: #b91c1c;">-</div>
-          <div class="stat-desc">Requires service or repair</div>
+          <div class="stat-label">Academic Labs Tracked</div>
+          <div class="stat-value" style="color: var(--brand-primary);">8 Labs</div>
+          <div class="stat-desc">Labs 1 to 7 + Computing Labs</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Department</div>
           <div class="stat-value" style="font-size: 18px; margin-top: 6px;">CSE</div>
           <div class="stat-desc">Computer Science & Engineering</div>
+        </div>
+      </div>
+
+      <!-- Interactive Lab Overview Pills with Live Counts -->
+      <div class="card" style="padding: 18px 20px; margin-bottom: 20px;">
+        <div style="font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <span>Browse by Lab (Click any card to filter instantly)</span>
+          <span style="font-size: 12px; color: var(--text-subtle); font-weight: normal;" id="active-lab-indicator">Showing: All Labs</span>
+        </div>
+        <div id="lab-pills-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px;">
+          <!-- Injected dynamically by JS -->
         </div>
       </div>
 

@@ -89,7 +89,7 @@ async function getAssets(req, res, next) {
 
 /**
  * GET /api/assets/summary
- * Aggregate statistics for the inventory page (total, by lab, by condition).
+ * Aggregate statistics for the inventory page (total, by lab group, by condition).
  */
 async function getInventorySummary(req, res, next) {
   try {
@@ -101,13 +101,24 @@ async function getInventorySummary(req, res, next) {
       FROM assets;
     `);
 
+    // Group assets cleanly into their primary academic lab categories
     const labsRes = await query(`
       SELECT 
-        COALESCE(location, 'Unassigned') AS lab_name,
+        CASE 
+          WHEN location ILIKE '%Lab 1%' THEN 'Lab 1'
+          WHEN location ILIKE '%Lab-2%' OR location ILIKE '%CLH%' THEN 'Lab 2'
+          WHEN location ILIKE '%Lab-3%' THEN 'Lab 3'
+          WHEN location ILIKE '%LAB%4%' THEN 'Lab 4'
+          WHEN location ILIKE '%Lab5%' THEN 'Lab 5'
+          WHEN location ILIKE '%Lab-7%' OR location IN ('Mr. Ashok Chikaraddi', 'Mr. Pradeep Shet', 'Ms. Neha Panchal', 'Ms. Shrusti Gunjal') THEN 'Lab 7'
+          WHEN location ILIKE '%Computing%' THEN 'C-Lab 1'
+          WHEN location ILIKE '%C-Lab%' OR location = 'Ms. Salma M B' THEN 'C-Lab 2'
+          ELSE 'Other'
+        END AS lab_group,
         COUNT(*) AS count
       FROM assets
-      GROUP BY location
-      ORDER BY location;
+      GROUP BY 1
+      ORDER BY 1;
     `);
 
     res.json({

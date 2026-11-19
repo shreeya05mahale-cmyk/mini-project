@@ -21,7 +21,7 @@ The platform digitalizes the complete paper-based institutional lifecycle: depar
 | Resource | URL | Description |
 |---|---|---|
 | **Web Portal** | `http://localhost:3000/` | Main web interface & dashboards |
-| **Asset Registry** | `http://localhost:3000/inventory.html` | Real-time searchable & filterable lab asset registry |
+| **Asset Registry** | `http://localhost:3000/inventory.html` | Real-time searchable & filterable lab asset registry with interactive lab overview cards |
 | **Swagger UI Docs** | `http://localhost:3000/api-docs` | Interactive OpenAPI playground to test all endpoints |
 | **System Health** | `http://localhost:3000/api/health` | Live server & PostgreSQL connectivity status |
 
