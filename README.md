@@ -60,6 +60,16 @@ Every asset record stores complete hardware attributes in a PostgreSQL **`specif
 
 ---
 
+## 🏢 Official University Suppliers Directory (65 Registered Vendors)
+
+Imported directly from the official InfoCell vendor registry (`documents/vendor list.docx`):
+* **Local Hardware & Systems:** Pursuit Technologies, Pursuit IT Solutions, RT Computers, Arpita Office Automation, Hubli Computers, Microcon Computers
+* **IT Networking & Infrastructure:** Automation Technologies (Mangalore), Net-Soft Systems & Networks, Tajus Network, BSNL
+* **Enterprise & Cloud Software:** DeepRoot Linux Pvt. Ltd., Wipro Infotech, IBM Bangalore, HCL Infiniti, Quick Heal, Satcom Infotech
+* **Electrical & Facilities:** Balaji Electricals, Pramod Electricals, Globe Power Systems, Techno Power
+
+---
+
 ## 🛠️ Local Development & Setup
 
 ### 1. Prerequisites

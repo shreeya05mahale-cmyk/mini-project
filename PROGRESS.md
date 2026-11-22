@@ -35,6 +35,7 @@ KLE Tech University IT Asset Inventory & Procurement Management System
 - [x] Integrated `swagger-jsdoc` and `swagger-ui-express`.
 - [x] Swagger UI mounted at `http://localhost:3000/api-docs` with KLE Tech custom styling.
 - [x] Health check endpoint `GET /api/health` verifying server & DB status.
+- [x] Ingested 65 official registered university vendors from `documents/vendor list.docx` into `suppliers` table with contact persons, phone numbers, and locations.
 
 ### 3. University Asset Ingestion (286 PCs)
 - [x] Ingested all physical lab machines from `CSE Desktop Data 24-09-2026.xlsx`.
