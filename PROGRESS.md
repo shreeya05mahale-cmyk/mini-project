@@ -13,8 +13,8 @@ KLE Tech University IT Asset Inventory & Procurement Management System
 | **API Documentation** | OpenAPI 3.0 & Swagger UI at `/api-docs` | ✅ Completed | 100% |
 | **Real Asset Ingestion** | Lab 1-7 Desktops & Register Provenance (286 PCs) | ✅ Completed | 100% |
 | **Engine 2** | Asset Registry & Inventory Web UI (`/inventory.html`) | ✅ Completed | 100% |
-| **Engine 1** | Purchase Requisition & Multi-Tier Approvals | ⏳ Next Up (Ready to implement) | 0% |
-| **Engine 1 (Procurement)** | Quotations & Purchase Order Generation | ⏳ Pending (Phase 5) | 0% |
+| **Engine 1** | Institutional Letter Requisitions & Multi-Tier Approvals | ✅ Completed | 100% |
+| **Engine 1 (Procurement)** | Quotations & Purchase Order Generation | ⏳ Next Up (Phase 5) | 0% |
 | **Engine 2 (Store)** | Goods Receipts & Delivery Reconciliation | ⏳ Pending (Phase 6) | 0% |
 | **Engine 2 & 3** | Internal Stock Transfers & Audit Reports | ⏳ Pending (Phase 7) | 0% |
 
@@ -29,22 +29,17 @@ KLE Tech University IT Asset Inventory & Procurement Management System
 - [x] User authentication with `bcrypt` (10 rounds) and PostgreSQL-backed sessions (`connect-pg-simple`).
 - [x] Role-Based Access Control middleware (`requireLogin`, `requireRole`).
 - [x] Scoped single HOD for CSE Department (`Dr. CS HOD`).
-- [x] Cleaned operational tables (no dummy purchase requests).
+- [x] Seeded 65 official registered university vendors from `documents/vendor list.docx`.
+- [x] Cleaned operational tables to start fresh for viva demonstrations.
 
-### 2. Interactive Documentation & System Health
-- [x] Integrated `swagger-jsdoc` and `swagger-ui-express`.
-- [x] Swagger UI mounted at `http://localhost:3000/api-docs` with KLE Tech custom styling.
-- [x] Health check endpoint `GET /api/health` verifying server & DB status.
-- [x] Ingested 65 official registered university vendors from `documents/vendor list.docx` into `suppliers` table with contact persons, phone numbers, and locations.
-
-### 3. University Asset Ingestion (286 PCs)
+### 2. University Asset Ingestion (286 PCs)
 - [x] Ingested all physical lab machines from `CSE Desktop Data 24-09-2026.xlsx`.
 - [x] Reconciled count to exact written totals across all labs (Lab 1: 43, Lab 2: 62, Lab 3: 45, Lab 4: 43, Lab 5: 43, Lab 7: 46, C-Lab 1: 1, C-Lab 2: 3 = **286 PCs**).
 - [x] Reconciled and linked physical Inward Stock Register records (#296, #728, #419, #279) with vendors, bill numbers, dates, and unit prices.
 - [x] Appended `Register_Mapping` sheet inside the Excel workbook.
 - [x] Added `specifications JSONB` to store CPU, RAM, storage, monitor, OS, antivirus, and licensing.
 
-### 4. Front-End Web Application
+### 3. Front-End Web Application & Design System
 - [x] Professional Academic Tech design system (`public/css/style.css`).
 - [x] Shared layout manager (`public/js/layout.js`) with dynamic role-based sidebar and topbar.
 - [x] Removed "K" brand badge from all headers per university UI styling.
@@ -52,14 +47,35 @@ KLE Tech University IT Asset Inventory & Procurement Management System
 - [x] Dashboard page (`public/index.html`) with dynamic metrics, on-the-fly notifications, and role quick actions.
 - [x] Inventory & Asset Registry page (`public/inventory.html`) with interactive lab overview cards with live machine counts (Lab 1: 43, Lab 2: 62, Lab 3: 45, Lab 4: 43, Lab 5: 43, Lab 7: 46, C-Labs: 4), condition filters, live search, and hardware specification modal.
 
+### 4. Institutional Requisition Letter & Multi-Tier Approvals (Engine 1)
+- [x] **Official Letter Template (`/request-new.html`)**:
+  - Exact match of the university's physical **"APPROVAL REQUEST LETTER"** (`documents/WhatsApp Image 2026-11-19 at 11.08.12.jpeg`).
+  - Letterhead (Established under Karnataka Act No. 22 of 2013, Hubballi), Ref No, Date.
+  - To: Registrar (Through InfoCell Coordinator), From: Head of Department.
+  - Dynamic line items description table with automated valuation calculations.
+  - Official 6-column Budget Allocation & Head of Account table with live available balance calculation.
+- [x] **Hierarchical Approval Routing Engine (`server/config/approvalRules.js`)**:
+  - Tier 1 ($\le$ ₹50,000): HOD $\rightarrow$ Coordinator $\rightarrow$ Registrar
+  - Tier 2 (> ₹50,000 and $\le$ ₹2,00,000): HOD $\rightarrow$ Coordinator $\rightarrow$ Registrar $\rightarrow$ Vice Chancellor
+  - Tier 3 (> ₹2,00,000): HOD $\rightarrow$ Coordinator $\rightarrow$ Registrar $\rightarrow$ VC $\rightarrow$ Pro Chancellor (PC)
+- [x] **Official Letter View & Digital Endorsement Trail (`/request-detail.html`)**:
+  - Full authentic institutional document view with print formatting (`window.print()`).
+  - Digital endorsement stamp cards for every officer in the chain showing timestamps, verification remarks, and statuses.
+- [x] **Technical Scrutiny & Approval Inbox (`/approvals.html`)**:
+  - Coordinator scrutiny docket with verification note inputs and quick actions.
+  - Sequential enforcement: no step can be approved until the prior officer has endorsed.
+- [x] **Rejection Circuit Breaker & Instant HOD Notification**:
+  - Rejection halts the workflow and marks status as `REJECTED`.
+  - Mandatory scrutiny grounds recorded in database.
+  - HOD dashboard immediately displays prominent rejection alert banners and notification badges with exact scrutiny remarks.
+- [x] **End-to-End Verification**:
+  - Automated test script `scripts/verify-letter-workflow.js` verifies submission, sequential multi-role endorsements, final approval, and rejection alerting.
+
 ---
 
 ## 🎯 Next Steps & Milestones
 
-1. **Phase 4: Purchase Request Submission & Multi-Stage Approvals (Engine 1)**
-   - HOD purchase request submission form (`/request-new.html`) with dynamic line items.
-   - Server-side amount computation and approval chain generation:
-     - Total $\le$ ₹50,000: HOD $\rightarrow$ Coordinator
-     - Total $\le$ ₹2,00,000: HOD $\rightarrow$ Coordinator $\rightarrow$ Registrar
-     - Total $>$ ₹2,00,000: HOD $\rightarrow$ Coordinator $\rightarrow$ Registrar $\rightarrow$ VC & Purchase Committee
-   - Approvals inbox (`/approvals.html`) for sequential decision-making.
+1. **Phase 5: Quotations & Purchase Order Generation (Engine 1 - Procurement)**
+   - Quotation entry and comparative statement matrix.
+   - Designated supplier assignment from registered vendors.
+   - Official Purchase Order generation matching `documents/WhatsApp Image 2026-11-19 at 11.07.41.jpeg`.

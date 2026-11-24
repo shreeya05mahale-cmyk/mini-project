@@ -40,7 +40,7 @@ INSERT INTO users (user_id, name, email, password_hash, role, dept_id) VALUES
   (4, 'Prof. InfoCell Coordinator', 'coordinator@kletech.ac.in', '$2b$10$wN/sZqN99u6D.FwGhy37teqj3kX65pZtzJmHlS1tG4V8jQ60e0d5a', 'COORDINATOR', 5),
   (5, 'University Registrar', 'registrar@kletech.ac.in', '$2b$10$wN/sZqN99u6D.FwGhy37teqj3kX65pZtzJmHlS1tG4V8jQ60e0d5a', 'REGISTRAR', NULL),
   (6, 'Vice Chancellor', 'vc@kletech.ac.in', '$2b$10$wN/sZqN99u6D.FwGhy37teqj3kX65pZtzJmHlS1tG4V8jQ60e0d5a', 'VC', NULL),
-  (7, 'Purchase Committee Head', 'pc@kletech.ac.in', '$2b$10$wN/sZqN99u6D.FwGhy37teqj3kX65pZtzJmHlS1tG4V8jQ60e0d5a', 'PC', NULL),
+  (7, 'Pro Chancellor', 'pc@kletech.ac.in', '$2b$10$wN/sZqN99u6D.FwGhy37teqj3kX65pZtzJmHlS1tG4V8jQ60e0d5a', 'PC', NULL),
   (8, 'Chief Storekeeper', 'store@kletech.ac.in', '$2b$10$wN/sZqN99u6D.FwGhy37teqj3kX65pZtzJmHlS1tG4V8jQ60e0d5a', 'STORE', 5);
 
 -- 3. Suppliers

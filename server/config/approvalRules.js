@@ -1,46 +1,34 @@
 /**
  * Approval Workflow Rules Configuration
  * 
- * PROVISIONAL UNIVERSITY THRESHOLDS:
- * These thresholds govern the multi-stage approval chain required for a purchase request.
- * Any request begins at HOD level (auto-approved upon submission by HOD).
- * If the university changes approval thresholds later, edit this file ONLY.
+ * Hierarchy Rules for KLE Tech:
+ * 1. The department requests through the HOD only (no direct faculty/student requisition).
+ * 2. InfoCell Coordinator scrutinizes and approves first.
+ * 3. Threshold Tiers:
+ *    - Up to ₹50,000: HOD -> Coordinator -> Registrar
+ *    - > ₹50,000 and <= ₹2,00,000: HOD -> Coordinator -> Registrar -> Vice Chancellor (VC)
+ *    - > ₹2,00,000: HOD -> Coordinator -> Registrar -> VC -> Pro Chancellor (PC)
  */
 
-// Boundary rule definition:
-// PROVISIONAL: Does an exact boundary amount (e.g. exactly 50,000) belong to the lower or higher band?
-// University guidance: "50,000 to below 2,00,000" means:
-// - total_amount < 10000: Band 1
-// - 10000 <= total_amount < 50000: Band 2
-// - 50000 <= total_amount < 200000: Band 3
-// - total_amount >= 200000: Band 4
-// Hence, exact boundary amounts (10000, 50000, 200000) fall into the higher band.
 const APPROVAL_TIERS = [
   {
-    name: 'TIER_1_LOW',
-    maxExclusive: 10000.00,
-    roles: ['HOD'],
-    description: 'Below ₹10,000: HOD only'
+    name: 'TIER_1_STANDARD',
+    maxInclusive: 50000.00,
+    roles: ['HOD', 'COORDINATOR', 'REGISTRAR'],
+    description: 'Up to ₹50,000: HOD -> Coordinator -> Registrar'
   },
   {
     name: 'TIER_2_MEDIUM',
-    minInclusive: 10000.00,
-    maxExclusive: 50000.00,
-    roles: ['HOD', 'COORDINATOR', 'REGISTRAR'],
-    description: '₹10,000 to below ₹50,000: HOD -> Coordinator -> Registrar'
-  },
-  {
-    name: 'TIER_3_HIGH',
-    minInclusive: 50000.00,
-    maxExclusive: 200000.00,
+    minExclusive: 50000.00,
+    maxInclusive: 200000.00,
     roles: ['HOD', 'COORDINATOR', 'REGISTRAR', 'VC'],
-    description: '₹50,000 to below ₹2,00,000: HOD -> Coordinator -> Registrar -> Vice Chancellor'
+    description: '₹50,001 to ₹2,00,000: HOD -> Coordinator -> Registrar -> Vice Chancellor'
   },
   {
-    name: 'TIER_4_MAJOR',
-    minInclusive: 200000.00,
+    name: 'TIER_3_MAJOR',
+    minExclusive: 200000.00,
     roles: ['HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC'],
-    description: '₹2,00,000 and above: HOD -> Coordinator -> Registrar -> VC -> Purchase Committee'
+    description: 'Above ₹2,00,000: HOD -> Coordinator -> Registrar -> VC -> Pro Chancellor'
   }
 ];
 
@@ -48,7 +36,7 @@ const APPROVAL_TIERS = [
  * Returns the ordered array of approver roles for a given request total amount.
  * 
  * @param {number|string} totalAmount - The calculated total amount of the request
- * @returns {Array<string>} Array of roles in sequential approval order, e.g. ['HOD', 'COORDINATOR', 'REGISTRAR']
+ * @returns {Array<string>} Array of roles in sequential approval order
  */
 function getApprovalChain(totalAmount) {
   const amount = Number(totalAmount);
@@ -57,11 +45,9 @@ function getApprovalChain(totalAmount) {
     throw new Error(`Invalid total amount for approval chain calculation: ${totalAmount}`);
   }
 
-  if (amount < 10000) {
-    return ['HOD'];
-  } else if (amount < 50000) {
+  if (amount <= 50000.00) {
     return ['HOD', 'COORDINATOR', 'REGISTRAR'];
-  } else if (amount < 200000) {
+  } else if (amount <= 200000.00) {
     return ['HOD', 'COORDINATOR', 'REGISTRAR', 'VC'];
   } else {
     return ['HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC'];

@@ -599,3 +599,199 @@ body.login-body {
     padding: 16px;
   }
 }
+
+/* ==========================================================================
+   OFFICIAL UNIVERSITY DOCUMENT & LETTERHEAD TEMPLATE
+   ========================================================================== */
+.letter-sheet {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  padding: 40px 48px;
+  max-width: 960px;
+  margin: 0 auto 30px auto;
+  font-family: 'Manrope', -apple-system, sans-serif;
+  color: #1e293b;
+  position: relative;
+}
+
+.letterhead-header {
+  text-align: center;
+  border-bottom: 2px solid #0f172a;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.letterhead-uni-name {
+  font-family: 'Outfit', serif;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #0f172a;
+  text-transform: uppercase;
+}
+
+.letterhead-subtext {
+  font-size: 11.5px;
+  color: #475569;
+  margin-top: 3px;
+  line-height: 1.45;
+}
+
+.letter-title-badge {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 5px 22px;
+  background: #f8fafc;
+  border: 1.5px solid #0f172a;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #0f172a;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.letter-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 10px;
+}
+
+.letter-address-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.address-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.address-box-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.letter-subject-block {
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.letter-salutation {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.letter-prose {
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: #334155;
+}
+
+.letter-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 12.5px;
+}
+
+.letter-table th {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 700;
+  border: 1px solid #cbd5e1;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.letter-table td {
+  border: 1px solid #cbd5e1;
+  padding: 8px 10px;
+  vertical-align: middle;
+}
+
+.letter-table tfoot td {
+  background: #f8fafc;
+  font-weight: 700;
+}
+
+.letter-signatures-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.sign-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.sign-card.approved {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.sign-card.pending {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.sign-card.rejected {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.stamp-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.stamp-badge.approved { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+.stamp-badge.pending { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.stamp-badge.rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+.sign-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sign-sub {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+

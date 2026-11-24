@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approval Request Letter & Endorsement Trail - KLE Tech</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    @media print {
+      .app-header, .app-sidebar, .page-header, .action-toolbar, #rejection-banner {
+        display: none !important;
+      }
+      .app-main {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .letter-sheet {
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container" class="app-wrapper">
+    <main class="app-main">
+
+      <div class="page-header" style="max-width: 960px; margin: 0 auto 20px auto;">
+        <div>
+          <h1 class="page-title" id="page-title">Approval Request Letter</h1>
+          <p class="page-subtitle" id="page-subtitle">Official Institutional Document & Multi-Tier Endorsement Trail</p>
+        </div>
+        <div style="display: flex; gap: 10px;" class="action-toolbar">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ Print Document</button>
+          <a href="/requests.html" class="btn btn-secondary btn-sm">&larr; Back to Requests</a>
+        </div>
+      </div>
+
+      <!-- Rejection Banner (surfaced if status is REJECTED) -->
+      <div id="rejection-banner" style="display: none; max-width: 960px; margin: 0 auto 20px auto; padding: 16px 20px; background: #fef2f2; border: 1.5px solid #f87171; border-radius: 8px; color: #991b1b;">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <div style="font-size: 24px; line-height: 1;">⚠️</div>
+          <div>
+            <div style="font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Requisition Rejected</div>
+            <div style="font-size: 13px; margin-top: 4px;" id="rejection-message">-</div>
+            <div style="font-size: 12px; margin-top: 6px; color: #b91c1c;">
+              <strong>Action Required:</strong> The Department HOD must review the scrutiny grounds above and submit a revised requisition letter.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- The Official Letter Sheet -->
+      <div class="letter-sheet" id="letter-content">
+        
+        <!-- University Letterhead -->
+        <div class="letterhead-header">
+          <div class="letterhead-uni-name">KLE Technological University</div>
+          <div class="letterhead-subtext">
+            (Established under Karnataka Act No. 22 of 2013)<br>
+            B. V. Bhoomaraddi Campus, Vidyanagar, Hubballi - 580 031, Karnataka (India)<br>
+            Website: www.kletech.ac.in &bull; Email: info@kletech.ac.in
+          </div>
+          <div>
+            <span class="letter-title-badge">APPROVAL REQUEST LETTER</span>
+          </div>
+        </div>
+
+        <!-- Ref No & Date -->
+        <div class="letter-meta-row">
+          <div>
+            <span>Ref. No.: </span>
+            <strong id="doc-ref-no" style="font-family: monospace; color: #0f172a;">KLE-TECH/INFOCELL/REQ/2026/000</strong>
+          </div>
+          <div>
+            <span>Date: </span>
+            <strong id="doc-date">-</strong>
+          </div>
+        </div>
+
+        <!-- Addressing Box -->
+        <div class="letter-address-section">
+          <div class="address-box">
+            <div class="address-box-label">TO:</div>
+            <strong>The Registrar</strong><br>
+            KLE Technological University<br>
+            Hubballi - 580031<br>
+            <div style="margin-top: 6px; color: #2563eb; font-weight: 700;">
+              Through: The Coordinator, InfoCell
+            </div>
+          </div>
+
+          <div class="address-box">
+            <div class="address-box-label">FROM:</div>
+            <strong id="doc-from-name">-</strong><br>
+            Professor & Head of Department<br>
+            <span id="doc-from-dept">-</span><br>
+            KLE Technological University
+          </div>
+        </div>
+
+        <!-- Subject Line -->
+        <div class="letter-subject-block">
+          <strong>Subject: </strong>
+          <span id="doc-subject" style="font-weight: 700; color: #0f172a; text-decoration: underline;">-</span>
+        </div>
+
+        <!-- Salutation & Justification Prose -->
+        <div class="letter-salutation">Sir / Madam,</div>
+        
+        <div class="letter-prose">
+          With reference to the subject cited above, the following equipment / hardware items are required for departmental computing infrastructure. The detailed item specifications, estimated unit valuations, and budget allocation details are submitted herewith for necessary approval.
+        </div>
+
+        <!-- Academic / Institutional Justification -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; margin-bottom: 22px;">
+          <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">
+            Departmental Purpose & Justification:
+          </div>
+          <div id="doc-justification" style="font-size: 13.5px; color: #1e293b; line-height: 1.5;">-</div>
+        </div>
+
+        <!-- Table 1: Equipment Details -->
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 8px;">
+            1. Description of Required Items & Estimated Outlay
+          </div>
+          <table class="letter-table">
+            <thead>
+              <tr>
+                <th style="width: 5%; text-align: center;">Sl.</th>
+                <th style="width: 28%;">Item Name</th>
+                <th style="width: 37%;">Technical Specification</th>
+                <th style="width: 10%; text-align: center;">Qty</th>
+                <th style="width: 10%; text-align: right;">Unit Price (₹)</th>
+                <th style="width: 10%; text-align: right;">Total (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="items-tbody">
+              <!-- Injected by JS -->
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" style="text-align: right; font-weight: 800;">Total Estimated Outlay:</td>
+                <td id="grand-total-display" style="text-align: right; font-weight: 800; font-family: monospace; font-size: 14px; color: #0f172a;">₹0.00</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Table 2: Budget Allocation -->
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 8px;">
+            2. Budget Allocation & Account Head Verification
+          </div>
+          <table class="letter-table" id="budget-table">
+            <thead>
+              <tr>
+                <th style="width: 5%; text-align: center;">Sl.</th>
+                <th style="width: 22%;">Category of Expenditure</th>
+                <th style="width: 23%;">Head of Account</th>
+                <th style="width: 13%; text-align: right;">Budget Sanctioned (₹)</th>
+                <th style="width: 12%; text-align: right;">Expenses till Date (₹)</th>
+                <th style="width: 12%; text-align: right;">Committed (₹)</th>
+                <th style="width: 13%; text-align: right;">Available Balance (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="budget-tbody">
+              <!-- Injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Institutional Hierarchy Endorsements -->
+        <div style="margin-top: 30px;">
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span>3. Institutional Scrutiny & Digital Endorsements</span>
+            <span id="doc-status-badge" class="status-badge status-pending" style="font-size: 11px;">UNDER APPROVAL</span>
+          </div>
+
+          <div class="letter-signatures-grid" id="signatures-grid">
+            <!-- Dynamic signature / stamp cards injected by JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const reqId = urlParams.get('id');
+      if (!reqId) {
+        window.location.href = '/requests.html';
+        return;
+      }
+
+      try {
+        const res = await API.get(`/api/requests/${reqId}`);
+        if (!res.success) {
+          alert(res.message);
+          return;
+        }
+
+        const { request, items, approvals } = res;
+
+        // Meta
+        document.getElementById('doc-ref-no').textContent = `KLE-TECH/INFOCELL/REQ/2026/${String(request.request_id).padStart(3, '0')}`;
+        document.getElementById('doc-date').textContent = request.formatted_date;
+        document.getElementById('doc-from-name').textContent = request.requested_by_name;
+        document.getElementById('doc-from-dept').textContent = request.dept_name;
+        document.getElementById('doc-subject').textContent = request.subject || 'Approval for procurement of Departmental Computing Infrastructure';
+        document.getElementById('doc-justification').textContent = request.justification;
+
+        // Status Badge
+        const statusBadge = document.getElementById('doc-status-badge');
+        statusBadge.textContent = request.status.replace('_', ' ');
+        if (request.status === 'APPROVED') statusBadge.className = 'status-badge status-approved';
+        else if (request.status === 'REJECTED') statusBadge.className = 'status-badge status-rejected';
+        else statusBadge.className = 'status-badge status-pending';
+
+        // Check if any step was rejected to show banner
+        const rejectedStep = approvals.find(a => a.decision === 'REJECTED');
+        if (rejectedStep) {
+          const banner = document.getElementById('rejection-banner');
+          banner.style.display = 'block';
+          const deciderRole = rejectedStep.approver_role === 'COORDINATOR' ? 'InfoCell Coordinator' : rejectedStep.approver_role;
+          const deciderName = rejectedStep.approver_name ? `(${rejectedStep.approver_name})` : '';
+          document.getElementById('rejection-message').innerHTML = `
+            Rejected at <strong>Step ${rejectedStep.step_order} by ${deciderRole} ${deciderName}</strong>.<br>
+            <strong>Official Scrutiny Grounds:</strong> "${escapeHtml(rejectedStep.remarks || 'Requirements do not meet specifications.')}"
+          `;
+        }
+
+        // Table 1: Items
+        document.getElementById('items-tbody').innerHTML = items.map((it, idx) => `
+          <tr>
+            <td style="text-align: center; color: #64748b; font-weight: 700;">${idx + 1}</td>
+            <td><strong>${escapeHtml(it.item_name)}</strong></td>
+            <td style="font-size: 12px; color: #475569;">${escapeHtml(it.specification || '-')}</td>
+            <td style="text-align: center;">${it.quantity}</td>
+            <td style="text-align: right; font-family: monospace;">₹${Number(it.estimated_price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td style="text-align: right; font-family: monospace; font-weight: 700;">₹${(it.quantity * it.estimated_price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+          </tr>
+        `).join('');
+
+        document.getElementById('grand-total-display').textContent = `₹${Number(request.total_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+
+        // Table 2: Budget details
+        let b = request.budget_details;
+        if (!b || typeof b !== 'object') {
+          b = {
+            category: 'Capital Equipment / Lab Infra',
+            head: 'IT Hardware & Lab Upgrades',
+            sanctioned: 2500000,
+            spent: 850000,
+            committed: 210000
+          };
+        }
+        const avail = (b.sanctioned || 0) - (b.spent || 0) - (b.committed || 0);
+        document.getElementById('budget-tbody').innerHTML = `
+          <tr>
+            <td style="text-align: center;">1</td>
+            <td>${escapeHtml(b.category || 'Capital Equipment')}</td>
+            <td>${escapeHtml(b.head || 'IT Hardware')}</td>
+            <td style="text-align: right; font-family: monospace;">₹${Number(b.sanctioned || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td style="text-align: right; font-family: monospace;">₹${Number(b.spent || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td style="text-align: right; font-family: monospace;">₹${Number(b.committed || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td style="text-align: right; font-family: monospace; font-weight: 700; color: #166534;">₹${Number(avail).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+          </tr>
+        `;
+
+        // Section 3: Signatures / Endorsement Cards
+        const roleTitles = {
+          HOD: 'Head of Department',
+          COORDINATOR: 'InfoCell Coordinator',
+          REGISTRAR: 'University Registrar',
+          VC: 'Vice Chancellor',
+          PC: 'Pro Chancellor'
+        };
+
+        document.getElementById('signatures-grid').innerHTML = approvals.map(app => {
+          let cardClass = 'sign-card pending';
+          let stampText = 'Awaiting Endorsement';
+          let stampClass = 'stamp-badge pending';
+
+          if (app.decision === 'APPROVED') {
+            cardClass = 'sign-card approved';
+            stampText = '✓ Digitally Endorsed';
+            stampClass = 'stamp-badge approved';
+          } else if (app.decision === 'REJECTED') {
+            cardClass = 'sign-card rejected';
+            stampText = '✕ Scrutiny Rejected';
+            stampClass = 'stamp-badge rejected';
+          }
+
+          const roleName = roleTitles[app.approver_role] || app.approver_role;
+          const officer = app.approver_name ? `<div><strong>${escapeHtml(app.approver_name)}</strong></div>` : `<div style="color: #94a3b8; font-style: italic;">Pending Verification</div>`;
+          const dateStr = app.formatted_decided_at ? `<div style="font-size: 10px; color: #64748b; margin-top: 2px;">${app.formatted_decided_at}</div>` : '';
+          const remarks = app.remarks ? `<div style="font-size: 11px; margin-top: 6px; padding: 4px 6px; background: rgba(0,0,0,0.03); border-radius: 4px; font-style: italic; color: #334155;">"${escapeHtml(app.remarks)}"</div>` : '';
+
+          return `
+            <div class="${cardClass}">
+              <div class="${stampClass}">${stampText}</div>
+              <div class="sign-title">Step ${app.step_order}: ${roleName}</div>
+              <div class="sign-sub">${officer}${dateStr}</div>
+              ${remarks}
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchase Requisitions - KLE Tech Asset & Procurement</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app-container" class="app-wrapper">
+    <main class="app-main">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Purchase Requisitions</h1>
+          <p class="page-subtitle">Track departmental equipment requisitions, official letters, and multi-tier approval status</p>
+        </div>
+        <div id="header-action-container">
+          <!-- Injected dynamically if user is HOD -->
+        </div>
+      </div>
+
+      <!-- Rejection Notification for HOD -->
+      <div id="hod-rejection-alert" style="display: none; padding: 14px 18px; margin-bottom: 20px; background: #fef2f2; border: 1.5px solid #f87171; border-radius: 6px; color: #991b1b; font-size: 13px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <strong>⚠️ Departmental Notice:</strong> One or more of your requisitions was <strong>REJECTED</strong> during scrutiny. Please open the letter to view the committee/coordinator remarks and grounds.
+          </div>
+        </div>
+      </div>
+
+      <!-- Requests Table Card -->
+      <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 class="card-title">All Departmental Requisitions</h2>
+          <div id="requests-count" style="font-size: 13px; color: var(--text-subtle);">Showing 0 requests</div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 8%;">Ref No.</th>
+                <th style="width: 15%;">Department</th>
+                <th style="width: 14%;">Submitted By</th>
+                <th style="width: 25%;">Subject / Purpose</th>
+                <th style="width: 13%;">Total Valuation</th>
+                <th style="width: 11%;">Status</th>
+                <th style="text-align: right; width: 14%;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="requests-tbody">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 32px; color: var(--text-subtle);">
+                  Loading purchase requisitions...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const auth = await API.getCurrentUser();
+        if (auth.user.role === 'HOD') {
+          document.getElementById('header-action-container').innerHTML = `
+            <a href="/request-new.html" class="btn btn-primary">+ Submit Requisition Letter</a>
+          `;
+        }
+
+        const res = await API.get('/api/requests');
+        const tbody = document.getElementById('requests-tbody');
+
+        if (!res.success || !res.requests || res.requests.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 36px; color: var(--text-subtle);">
+                No purchase requisitions found. Click <strong>"+ Submit Requisition Letter"</strong> to initiate one.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        document.getElementById('requests-count').textContent = `Showing ${res.requests.length} requests`;
+
+        // Check if any request is rejected
+        const hasRejected = res.requests.some(r => r.status === 'REJECTED');
+        if (hasRejected && auth.user.role === 'HOD') {
+          document.getElementById('hod-rejection-alert').style.display = 'block';
+        }
+
+        tbody.innerHTML = res.requests.map(r => {
+          let badgeClass = 'status-pending';
+          if (r.status === 'APPROVED') badgeClass = 'status-approved';
+          else if (r.status === 'REJECTED') badgeClass = 'status-rejected';
+
+          const titleText = r.subject || r.justification;
+
+          return `
+            <tr>
+              <td style="font-weight: 700; color: var(--brand-primary); font-family: monospace;">#REQ-${String(r.request_id).padStart(3, '0')}</td>
+              <td>${escapeHtml(r.dept_name)}</td>
+              <td>${escapeHtml(r.requested_by_name)}</td>
+              <td style="max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(titleText)}">
+                <strong>${escapeHtml(titleText)}</strong>
+                <div style="font-size: 11px; color: var(--text-subtle);">${escapeHtml(r.formatted_date)}</div>
+              </td>
+              <td style="font-weight: 700; font-family: monospace;">₹${Number(r.total_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+              <td><span class="status-badge ${badgeClass}">${escapeHtml(r.status.replace('_', ' '))}</span></td>
+              <td style="text-align: right;">
+                <a href="/request-detail.html?id=${r.request_id}" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 11px;">View Letter &rarr;</a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

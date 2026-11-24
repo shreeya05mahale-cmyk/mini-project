@@ -113,14 +113,18 @@ app.get('/api/health', async (req, res, next) => {
   }
 });
 
-// API Routes (Engine 4 & Engine 2)
+// API Routes (Engine 4, Engine 2, Engine 1)
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const assetRoutes = require('./routes/assetRoutes');
+const requestRoutes = require('./routes/requestRoutes');
+const approvalRoutes = require('./routes/approvalRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/assets', assetRoutes);
+app.use('/api/requests', requestRoutes);
+app.use('/api/approvals', approvalRoutes);
 
 // 404 handler for unknown API endpoints
 app.use('/api/*', (req, res) => {

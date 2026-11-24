@@ -67,8 +67,35 @@ async function getNotifications(req, res, next) {
       }
     }
 
-    // 3. Status updates for HOD's own requests
+    // 3. Status updates for HOD's own requests (including REJECTIONS with remarks)
     if (user.role === 'HOD') {
+      // Check for rejected requests
+      const rejectedSql = `
+        SELECT 
+          pr.request_id, 
+          pr.subject,
+          pr.total_amount,
+          a.approver_role,
+          a.remarks AS rejection_remarks,
+          u.name AS rejected_by_name
+        FROM purchase_requests pr
+        JOIN approvals a ON pr.request_id = a.request_id AND a.decision = 'REJECTED'
+        LEFT JOIN users u ON a.approver_id = u.user_id
+        WHERE pr.requested_by = $1 AND pr.status = 'REJECTED'
+        ORDER BY a.decided_at DESC
+        LIMIT 3;
+      `;
+      const rejResult = await query(rejectedSql, [user.user_id]);
+      rejResult.rows.forEach(r => {
+        const roleLabel = r.approver_role === 'COORDINATOR' ? 'InfoCell Coordinator' : r.approver_role;
+        notificationMessages.push({
+          type: 'REQUEST_REJECTED',
+          requestId: r.request_id,
+          text: `⚠️ Notice: Requisition #REQ-${String(r.request_id).padStart(3, '0')} was REJECTED by ${roleLabel}. Reason: "${r.rejection_remarks || 'Requirements not aligned with standards'}"`
+        });
+      });
+
+      // Also approved/ordered updates
       const hodUpdatesSql = `
         SELECT request_id, status, total_amount
         FROM purchase_requests
@@ -80,7 +107,8 @@ async function getNotifications(req, res, next) {
       hodResult.rows.forEach(r => {
         notificationMessages.push({
           type: 'REQUEST_UPDATE',
-          text: `Your request #${r.request_id} for ₹${Number(r.total_amount).toLocaleString('en-IN')} is now ${r.status}.`
+          requestId: r.request_id,
+          text: `Your requisition #REQ-${String(r.request_id).padStart(3, '0')} for ₹${Number(r.total_amount).toLocaleString('en-IN')} is now ${r.status}.`
         });
       });
     }

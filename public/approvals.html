@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approvals & Scrutiny Inbox - KLE Tech Asset & Procurement</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(3px);
+      padding: 20px;
+    }
+    .modal-card {
+      background: #ffffff;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1.5px solid #0f172a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+    }
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .btn-approve {
+      background: #16a34a;
+      color: #ffffff;
+      font-weight: 700;
+      border: 1px solid #15803d;
+      padding: 8px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-approve:hover {
+      background: #15803d;
+    }
+    .btn-reject {
+      background: #dc2626;
+      color: #ffffff;
+      font-weight: 700;
+      border: 1px solid #b91c1c;
+      padding: 8px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-reject:hover {
+      background: #b91c1c;
+    }
+    .scrutiny-docket {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container" class="app-wrapper">
+    <main class="app-main">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Institutional Approvals Inbox</h1>
+          <p class="page-subtitle">Official scrutinies, technical verifications, and hierarchical endorsements</p>
+        </div>
+      </div>
+
+      <!-- Role Info Banner -->
+      <div id="role-info-banner" style="padding: 12px 18px; margin-bottom: 20px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 13px; color: #1e40af; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <strong>🏛️ Action Center:</strong> Showing requisitions currently queued at your hierarchy tier awaiting technical scrutiny or digital endorsement.
+        </div>
+      </div>
+
+      <!-- Pending Tasks Table Card -->
+      <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 class="card-title">Actionable Requisitions Awaiting Your Decision</h2>
+          <div id="pending-count-badge" style="font-size: 13px; color: var(--text-subtle);">0 pending</div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 10%;">Ref No.</th>
+                <th style="width: 15%;">Department</th>
+                <th style="width: 15%;">Initiated By</th>
+                <th style="width: 25%;">Subject / Justification</th>
+                <th style="width: 13%;">Total Valuation</th>
+                <th style="width: 10%;">Hierarchy Step</th>
+                <th style="text-align: right; width: 12%;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="approvals-tbody">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 32px; color: var(--text-subtle);">
+                  Checking pending approval tasks...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Official Scrutiny & Endorsement Modal -->
+  <div id="decision-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Institutional File Scrutiny</div>
+          <h3 id="modal-title" style="font-size: 16px; font-weight: 800; color: #0f172a;">Review Requisition</h3>
+        </div>
+        <button id="modal-close-btn" style="background: none; border: none; font-size: 22px; cursor: pointer; color: #64748b;">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Requisition Docket -->
+        <div class="scrutiny-docket" id="modal-summary">
+          Loading docket details...
+        </div>
+
+        <!-- Scrutiny Remarks Field -->
+        <div class="input-group">
+          <label class="input-label" for="decision-remarks" style="font-weight: 700; font-size: 12.5px;">
+            Official Scrutiny Remarks / Verification Note *
+          </label>
+          <textarea 
+            id="decision-remarks" 
+            class="input" 
+            rows="3" 
+            placeholder="e.g., Technical specifications verified against laboratory syllabus. Stock verified: 15 obsolete systems replaced. Recommended for procurement."
+          ></textarea>
+          <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+            * If rejecting, clear grounds for rejection are strictly mandatory and will be returned to the HOD.
+          </div>
+        </div>
+
+        <!-- Hierarchy Forwarding Notice -->
+        <div id="forwarding-notice" style="margin-top: 16px; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; font-size: 12px; color: #166534;">
+          <strong>Hierarchy Routing:</strong> Upon endorsement, your digital stamp will be recorded and the requisition will proceed to the next authority.
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="btn-reject-action" class="btn-reject">✕ Reject Requisition</button>
+        <button type="button" id="btn-approve-action" class="btn-approve">✓ Endorse & Forward &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script>
+    let activeRequestId = null;
+    let currentUserRole = '';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const auth = await API.getCurrentUser();
+      currentUserRole = auth.user.role;
+
+      await loadPendingApprovals();
+
+      document.getElementById('modal-close-btn').addEventListener('click', closeDecisionModal);
+      document.getElementById('decision-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'decision-modal') closeDecisionModal();
+      });
+
+      document.getElementById('btn-approve-action').addEventListener('click', () => submitDecision('APPROVED'));
+      document.getElementById('btn-reject-action').addEventListener('click', () => submitDecision('REJECTED'));
+    });
+
+    async function loadPendingApprovals() {
+      try {
+        const res = await API.get('/api/approvals/pending');
+        const tbody = document.getElementById('approvals-tbody');
+
+        if (!res.success || !res.approvals || res.approvals.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 36px; color: var(--text-subtle);">
+                ✓ All clear! There are no purchase requisitions currently awaiting your decision.
+              </td>
+            </tr>
+          `;
+          document.getElementById('pending-count-badge').textContent = '0 pending';
+          return;
+        }
+
+        document.getElementById('pending-count-badge').textContent = `${res.approvals.length} actionable task(s)`;
+
+        tbody.innerHTML = res.approvals.map(a => `
+          <tr>
+            <td style="font-weight: 700; color: var(--brand-primary); font-family: monospace;">#REQ-${String(a.request_id).padStart(3, '0')}</td>
+            <td>${escapeHtml(a.dept_name)}</td>
+            <td>${escapeHtml(a.requested_by_name)}</td>
+            <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(a.justification)}">
+              <strong>${escapeHtml(a.justification)}</strong>
+              <div style="font-size: 11px; color: var(--text-subtle);">${escapeHtml(a.formatted_date)}</div>
+            </td>
+            <td style="font-weight: 700; font-family: monospace;">₹${Number(a.total_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td><span class="role-pill" style="font-size: 11px;">Step ${a.step_order}: ${escapeHtml(a.approver_role)}</span></td>
+            <td style="text-align: right; display: flex; gap: 6px; justify-content: flex-end;">
+              <a href="/request-detail.html?id=${a.request_id}" target="_blank" class="btn btn-secondary btn-sm" style="padding: 4px 8px; font-size: 11px;" title="View Full Letter">Letter ↗</a>
+              <button class="btn btn-primary btn-sm" style="padding: 4px 10px; font-size: 11px; font-weight: 700;" onclick="openDecisionModal(${a.request_id}, '${escapeHtml(a.justification)}', ${a.total_amount}, '${escapeHtml(a.dept_name)}', '${escapeHtml(a.requested_by_name)}')">Scrutinize</button>
+            </td>
+          </tr>
+        `).join('');
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    window.openDecisionModal = function(reqId, justification, total, dept, submitter) {
+      activeRequestId = reqId;
+      document.getElementById('modal-title').textContent = `Scrutiny for Requisition #REQ-${String(reqId).padStart(3, '0')}`;
+      
+      const roleTitles = {
+        COORDINATOR: 'InfoCell Coordinator (Technical Scrutiny)',
+        REGISTRAR: 'University Registrar (Administrative Clearance)',
+        VC: 'Vice Chancellor (Executive Clearance)',
+        PC: 'Pro Chancellor (Final Institutional Clearance)'
+      };
+
+      document.getElementById('modal-summary').innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+          <div><strong>Department:</strong> ${escapeHtml(dept)}</div>
+          <div><strong>Initiator:</strong> ${escapeHtml(submitter)}</div>
+        </div>
+        <div style="margin-bottom: 8px;"><strong>Justification:</strong> ${escapeHtml(justification)}</div>
+        <div style="font-size: 14px; font-weight: 800; color: #0f172a;">
+          Total Valuation: ₹${Number(total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+        </div>
+        <div style="margin-top: 10px; font-size: 11px; color: #2563eb;">
+          Acting as: <strong>${roleTitles[currentUserRole] || currentUserRole}</strong>
+        </div>
+      `;
+
+      // Set recommended default remarks for quick viva demonstration
+      const remarksInput = document.getElementById('decision-remarks');
+      if (currentUserRole === 'COORDINATOR') {
+        remarksInput.value = 'Technical specifications and lab requirements scrutinized. Approved and forwarded.';
+      } else if (currentUserRole === 'REGISTRAR') {
+        remarksInput.value = 'Budget head verified and administrative approval granted.';
+      } else if (currentUserRole === 'VC') {
+        remarksInput.value = 'Approved for procurement as recommended.';
+      } else if (currentUserRole === 'PC') {
+        remarksInput.value = 'Institutional endorsement granted. Forwarded for purchase order execution.';
+      } else {
+        remarksInput.value = '';
+      }
+
+      document.getElementById('decision-modal').style.display = 'flex';
+    };
+
+    function closeDecisionModal() {
+      document.getElementById('decision-modal').style.display = 'none';
+      activeRequestId = null;
+    }
+
+    async function submitDecision(decision) {
+      if (!activeRequestId) return;
+      const remarks = document.getElementById('decision-remarks').value.trim();
+
+      if (decision === 'REJECTED' && !remarks) {
+        alert('Institutional Requirement: Please enter detailed remarks explaining the grounds for rejection.');
+        return;
+      }
+
+      const confirmMsg = decision === 'APPROVED' 
+        ? 'Are you sure you want to endorse and forward this requisition?' 
+        : 'Are you sure you want to REJECT this requisition? This will halt the hierarchy and notify the HOD.';
+
+      if (!confirm(confirmMsg)) return;
+
+      try {
+        const res = await API.post(`/api/approvals/${activeRequestId}/decision`, {
+          decision,
+          remarks
+        });
+
+        if (res.success) {
+          alert(`Official Decision Recorded!\n\n${res.message}`);
+          closeDecisionModal();
+          await loadPendingApprovals();
+        } else {
+          alert(`Error: ${res.message}`);
+        }
+      } catch (err) {
+        alert(`Failed to record decision: ${err.message}`);
+      }
+    }
+  </script>
+</body>
+</html>

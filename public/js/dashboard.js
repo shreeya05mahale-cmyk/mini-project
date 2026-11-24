@@ -144,16 +144,35 @@ async function loadNotifications() {
 
     if (notifData.notifications && notifData.notifications.messages.length > 0) {
       container.style.display = 'block';
-      container.innerHTML = notifData.notifications.messages.map(m => `
-        <div style="background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--brand-primary); border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-          <div style="font-size: 13.5px; font-weight: 600; color: var(--text-main);">
-            ${escapeHtml(m.text)}
+      container.innerHTML = notifData.notifications.messages.map(m => {
+        let borderLeft = 'var(--brand-primary)';
+        let btnText = 'Review Now';
+        let btnUrl = '/approvals.html';
+        let btnClass = 'btn-primary';
+
+        if (m.type === 'REQUEST_REJECTED') {
+          borderLeft = '#ef4444';
+          btnText = 'View Rejection Letter';
+          btnUrl = `/request-detail.html?id=${m.requestId}`;
+          btnClass = 'btn-secondary';
+        } else if (m.type === 'REQUEST_UPDATE') {
+          borderLeft = '#10b981';
+          btnText = 'View Letter';
+          btnUrl = `/request-detail.html?id=${m.requestId}`;
+          btnClass = 'btn-secondary';
+        }
+
+        return `
+          <div style="background: var(--surface); border: 1px solid var(--border); border-left: 4px solid ${borderLeft}; border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+            <div style="font-size: 13.5px; font-weight: 600; color: var(--text-main); max-width: 80%;">
+              ${escapeHtml(m.text)}
+            </div>
+            <a href="${btnUrl}" class="btn ${btnClass} btn-sm" style="height: 30px; font-size: 12px; white-space: nowrap;">
+              ${btnText}
+            </a>
           </div>
-          <a href="/approvals.html" class="btn btn-primary btn-sm" style="height: 30px; font-size: 12px;">
-            Review Now
-          </a>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
   } catch (err) {
     console.error('Failed to load notifications:', err);

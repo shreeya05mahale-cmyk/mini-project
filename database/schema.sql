@@ -51,7 +51,9 @@ CREATE TABLE purchase_requests (
     request_id SERIAL PRIMARY KEY,
     dept_id INT NOT NULL REFERENCES departments(dept_id) ON DELETE RESTRICT,
     requested_by INT NOT NULL REFERENCES users(user_id) ON DELETE RESTRICT,
+    subject VARCHAR(255),
     justification TEXT NOT NULL,
+    budget_details JSONB,
     total_amount NUMERIC(12, 2) NOT NULL DEFAULT 0.00 CHECK (total_amount >= 0),
     status VARCHAR(30) NOT NULL DEFAULT 'UNDER_APPROVAL' 
         CHECK (status IN ('UNDER_APPROVAL', 'APPROVED', 'REJECTED', 'ORDERED', 'PARTIALLY_RECEIVED', 'COMPLETED')),
