@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const assetController = require('../controllers/assetController');
-const { requireLogin } = require('../middleware/auth');
+const { requireLogin, requireRole } = require('../middleware/auth');
 
 router.use(requireLogin);
 
@@ -58,9 +58,12 @@ router.get('/', assetController.getAssets);
  *         description: Summary counts of working/damaged assets and by lab
  */
 router.get('/summary', assetController.getInventorySummary);
-router.post('/', assetController.createAsset);
-router.patch('/:id/quantity', assetController.adjustQuantity);
-router.delete('/:id', assetController.deleteAsset);
 router.get('/:id', assetController.getAssetById);
+
+// Inventory modifications strictly restricted to InfoCell COORDINATOR and ADMIN
+router.post('/', requireRole('ADMIN', 'COORDINATOR'), assetController.createAsset);
+router.put('/:id', requireRole('ADMIN', 'COORDINATOR'), assetController.updateAsset);
+router.patch('/:id/quantity', requireRole('ADMIN', 'COORDINATOR'), assetController.adjustQuantity);
+router.delete('/:id', requireRole('ADMIN', 'COORDINATOR'), assetController.deleteAsset);
 
 module.exports = router;

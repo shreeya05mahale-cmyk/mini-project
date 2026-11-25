@@ -183,7 +183,7 @@ async function getAssetById(req, res, next) {
 
 /**
  * POST /api/assets
- * Add a new asset / computer unit to a lab.
+ * Add a new asset / computer unit to a lab with all specifications & provenance.
  */
 async function createAsset(req, res, next) {
   try {
@@ -195,6 +195,9 @@ async function createAsset(req, res, next) {
       quantity = 1,
       unit_cost = 0,
       vendor_name = 'KLE Tech University Store',
+      bill_no,
+      bill_date,
+      register_sl_no,
       specifications = {}
     } = req.body;
 
@@ -212,8 +215,11 @@ async function createAsset(req, res, next) {
     }
 
     const insertSql = `
-      INSERT INTO assets (asset_code, name, type, location, condition, quantity, unit_cost, vendor_name, specifications, dept_id)
-      VALUES ($1, $2, 'DURABLE', $3, $4, $5, $6, $7, $8, 1)
+      INSERT INTO assets (
+        asset_code, name, type, location, condition, quantity, unit_cost,
+        vendor_name, bill_no, bill_date, register_sl_no, specifications, dept_id
+      )
+      VALUES ($1, $2, 'DURABLE', $3, $4, $5, $6, $7, $8, $9, $10, $11, 1)
       RETURNING *;
     `;
 
@@ -224,13 +230,84 @@ async function createAsset(req, res, next) {
       condition,
       parseInt(quantity, 10) || 1,
       parseFloat(unit_cost) || 0,
-      vendor_name.trim(),
+      vendor_name ? vendor_name.trim() : 'KLE Tech University Store',
+      bill_no ? bill_no.trim() : null,
+      bill_date ? bill_date : null,
+      register_sl_no ? parseInt(register_sl_no, 10) : null,
       JSON.stringify(specifications)
     ]);
 
     res.status(201).json({
       success: true,
       message: `Asset ${finalCode} added to ${location} successfully.`,
+      asset: result.rows[0]
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * PUT /api/assets/:id
+ * Update an existing asset with all specifications & provenance.
+ */
+async function updateAsset(req, res, next) {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      location,
+      condition,
+      quantity,
+      unit_cost,
+      vendor_name,
+      bill_no,
+      bill_date,
+      register_sl_no,
+      specifications = {}
+    } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: 'Asset make / model name is required.' });
+    }
+
+    const updateSql = `
+      UPDATE assets SET
+        name = $1,
+        location = $2,
+        condition = $3,
+        quantity = $4,
+        unit_cost = $5,
+        vendor_name = $6,
+        bill_no = $7,
+        bill_date = $8,
+        register_sl_no = $9,
+        specifications = $10
+      WHERE asset_id::text = $11 OR asset_code = $11
+      RETURNING *;
+    `;
+
+    const result = await query(updateSql, [
+      name.trim(),
+      location ? location.trim() : 'Lab 1',
+      condition || 'GOOD',
+      parseInt(quantity, 10) || 1,
+      parseFloat(unit_cost) || 0,
+      vendor_name ? vendor_name.trim() : 'KLE Tech University Store',
+      bill_no ? bill_no.trim() : null,
+      bill_date ? bill_date : null,
+      register_sl_no ? parseInt(register_sl_no, 10) : null,
+      JSON.stringify(specifications),
+      id
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Asset not found.' });
+    }
+
+    res.json({
+      success: true,
+      message: `Asset ${result.rows[0].asset_code} updated successfully.`,
       asset: result.rows[0]
     });
   } catch (err) {
@@ -304,6 +381,7 @@ module.exports = {
   getInventorySummary,
   getAssetById,
   createAsset,
+  updateAsset,
   adjustQuantity,
   deleteAsset
 };

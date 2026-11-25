@@ -104,7 +104,7 @@ function renderSidebar(user, notifs) {
     {
       title: 'Dashboard',
       url: '/index.html',
-      roles: ['ADMIN', 'HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC', 'STORE']
+      roles: ['ADMIN', 'HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC']
     },
     {
       title: 'Purchase Requests',
@@ -121,7 +121,7 @@ function renderSidebar(user, notifs) {
     {
       title: 'Inventory & Registry',
       url: '/inventory.html',
-      roles: ['ADMIN', 'STORE', 'HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC']
+      roles: ['ADMIN', 'HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC']
     }
   ];
 

@@ -3,7 +3,7 @@
  *
  * Client-side script for the Inventory & Asset Registry page.
  * Supports lab filtering, full-text specs search, hardware modal,
- * quantity adjustments (+ / -), adding new assets, and deletion.
+ * comprehensive unit ingestion, editing, and deletion for Coordinator & Admin.
  */
 
 let currentPage = 1;
@@ -11,8 +11,23 @@ const pageSize = 50;
 let totalPagesCount = 1;
 let selectedLabGroup = ''; // canonical lab_group name from API or '' for all
 let currentAssets = [];    // in-memory store for currently rendered page assets
+let currentUser = null;
+let canEditInventory = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const auth = await API.getCurrentUser();
+    currentUser = auth.user;
+    canEditInventory = ['COORDINATOR', 'ADMIN'].includes(currentUser.role);
+    
+    const addBtn = document.getElementById('btn-open-add-asset');
+    if (addBtn) {
+      addBtn.style.display = canEditInventory ? 'inline-block' : 'none';
+    }
+  } catch (err) {
+    console.error('Failed to get user session:', err);
+  }
+
   setupEventListeners();
   await loadSummary();
   await loadAssets();
@@ -71,11 +86,15 @@ function setupEventListeners() {
     if (e.target.id === 'asset-modal') closeModal();
   });
 
-  // Add Asset Modal Handlers
+  // Add / Edit Asset Modal Handlers
   const addModal = document.getElementById('add-asset-modal');
-  document.getElementById('btn-open-add-asset').addEventListener('click', () => {
-    addModal.style.display = 'flex';
-  });
+  const addBtn = document.getElementById('btn-open-add-asset');
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      openCreateAssetModal();
+    });
+  }
+
   document.getElementById('add-modal-close-btn').addEventListener('click', () => {
     addModal.style.display = 'none';
   });
@@ -88,7 +107,7 @@ function setupEventListeners() {
 
   document.getElementById('add-asset-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    await handleCreateAsset();
+    await handleSaveAsset();
   });
 
   // Lab cards container event delegation
@@ -98,16 +117,20 @@ function setupEventListeners() {
       const card = e.target.closest('.lab-card-pill');
       if (!card) return;
       const lab = card.getAttribute('data-lab') || '';
-      selectLabPill(lab);
+      selectedLabGroup = lab;
+      const labSelect = document.getElementById('lab-select');
+      if (labSelect) labSelect.value = lab;
+      updateLabPillUI();
+      currentPage = 1;
+      loadAssets();
     });
   }
 
-  // Assets table body event delegation
+  // Row click event delegation
   const tbody = document.getElementById('assets-tbody');
   if (tbody) {
     tbody.addEventListener('click', (e) => {
-      // If clicking quantity buttons or delete button, do not open details modal
-      if (e.target.closest('.qty-btn') || e.target.closest('.btn-delete-asset')) {
+      if (e.target.closest('button')) {
         return;
       }
       const row = e.target.closest('.clickable-row');
@@ -127,7 +150,6 @@ async function loadSummary() {
       document.getElementById('summary-total').textContent = res.summary.total_pcs || 286;
       document.getElementById('summary-working').textContent = res.summary.working_pcs || 286;
 
-      // Render clickable Lab Overview cards using canonical lab_group names
       const labs = (res.byLab || []).filter(l => l.lab_group !== 'Other');
       renderLabPills(labs, res.summary.total_pcs || 286);
     }
@@ -140,7 +162,6 @@ function renderLabPills(labs, totalAll) {
   const container = document.getElementById('lab-pills-container');
   if (!container) return;
 
-  // "All Labs" card
   let html = `
     <div class="lab-card-pill ${selectedLabGroup === '' ? 'active' : ''}" data-lab="">
       <div class="lab-pill-name">All Labs</div>
@@ -148,7 +169,6 @@ function renderLabPills(labs, totalAll) {
     </div>
   `;
 
-  // Individual lab cards — data-lab stores canonical lab_group name
   labs.forEach(l => {
     const isAct = selectedLabGroup === l.lab_group;
     html += `
@@ -161,20 +181,6 @@ function renderLabPills(labs, totalAll) {
 
   container.innerHTML = html;
 }
-
-function selectLabPill(labGroup) {
-  selectedLabGroup = labGroup;
-
-  const labSelect = document.getElementById('lab-select');
-  if (labSelect) {
-    labSelect.value = labGroup;
-  }
-
-  updateLabPillUI();
-  currentPage = 1;
-  loadAssets();
-}
-window.selectLabPill = selectLabPill;
 
 function updateLabPillUI() {
   const pills = document.querySelectorAll('.lab-card-pill');
@@ -243,6 +249,14 @@ async function loadAssets() {
 
       const qty = parseInt(a.quantity, 10) || 1;
 
+      let actionsHtml = `<button class="btn btn-secondary btn-sm" onclick="openAssetModalByIndex(${idx})" style="padding: 4px 8px; font-size: 11px;">Details</button>`;
+      if (canEditInventory) {
+        actionsHtml += `
+          <button class="btn btn-secondary btn-sm" title="Edit Asset" onclick="openEditAssetModalByIndex(${idx})" style="padding: 4px 8px; font-size: 11px; margin-left: 4px; color: var(--brand-primary); font-weight: 600;">Edit</button>
+          <button class="btn btn-secondary btn-sm btn-delete-asset" title="Remove Asset" onclick="deleteAssetUnit(${a.asset_id}, '${escapeHtml(a.asset_code)}')" style="padding: 4px 6px; font-size: 11px; color: #ef4444; margin-left: 4px;">&times;</button>
+        `;
+      }
+
       return `
         <tr class="clickable-row" data-index="${idx}">
           <td style="font-weight: 600; font-family: monospace; color: var(--brand-primary);">${escapeHtml(a.asset_code)}</td>
@@ -252,21 +266,8 @@ async function loadAssets() {
           <td>${regTag}</td>
           <td style="font-size: 12px; font-weight: 600;">${costDisplay}</td>
           <td>${conditionBadge}</td>
-          
-          <!-- Inline Quantity Plus and Minus Controls -->
-          <td style="text-align: center;" onclick="event.stopPropagation();">
-            <div style="display: inline-flex; align-items: center; gap: 4px;">
-              <button type="button" class="qty-btn" title="Decrease Quantity (-1)" onclick="adjustQuantity(${a.asset_id}, -1)">&minus;</button>
-              <span class="qty-display">${qty}</span>
-              <button type="button" class="qty-btn" title="Increase Quantity (+1)" onclick="adjustQuantity(${a.asset_id}, +1)">&plus;</button>
-            </div>
-          </td>
-
-          <!-- Actions -->
-          <td style="text-align: right;" onclick="event.stopPropagation();">
-            <button class="btn btn-secondary btn-sm" onclick="openAssetModalByIndex(${idx})" style="padding: 4px 8px; font-size: 11px;">Details</button>
-            <button class="btn btn-secondary btn-sm btn-delete-asset" title="Remove Asset" onclick="deleteAssetUnit(${a.asset_id}, '${escapeHtml(a.asset_code)}')" style="padding: 4px 6px; font-size: 11px; color: #ef4444; margin-left: 4px;">&times;</button>
-          </td>
+          <td style="text-align: center; font-weight: 700; font-family: monospace; font-size: 13px;">${qty}</td>
+          <td style="text-align: right;" onclick="event.stopPropagation();">${actionsHtml}</td>
         </tr>
       `;
     }).join('');
@@ -277,20 +278,113 @@ async function loadAssets() {
   }
 }
 
-window.adjustQuantity = async function(assetId, change) {
+function openCreateAssetModal() {
+  document.getElementById('add-asset-form').reset();
+  document.getElementById('edit-asset-id').value = '';
+  document.getElementById('add-modal-title').textContent = '+ Add New Asset Unit to Registry';
+  document.getElementById('btn-submit-add-asset').textContent = '+ Save Asset to Registry';
+  document.getElementById('add-asset-modal').style.display = 'flex';
+}
+
+window.openEditAssetModalByIndex = function(idx) {
+  const asset = currentAssets[idx];
+  if (!asset) return;
+
+  const spec = asset.specifications || {};
+
+  document.getElementById('edit-asset-id').value = asset.asset_id;
+  document.getElementById('add-modal-title').textContent = `Edit Asset Details — ${asset.asset_code}`;
+  document.getElementById('btn-submit-add-asset').textContent = 'Update Asset Details';
+
+  document.getElementById('add-name').value = asset.name || '';
+  document.getElementById('add-location').value = asset.location || 'Lab 4';
+  document.getElementById('add-code').value = asset.asset_code || '';
+  document.getElementById('add-qty').value = asset.quantity || 1;
+  document.getElementById('add-condition').value = asset.condition || 'GOOD';
+
+  // Specs
+  document.getElementById('add-processor').value = spec.processor || '';
+  document.getElementById('add-gen').value = spec.generation || '';
+  document.getElementById('add-ram').value = spec.ram || '';
+  document.getElementById('add-hdd').value = spec.hdd || '';
+  document.getElementById('add-monitor').value = spec.monitor || '';
+  document.getElementById('add-os').value = spec.os || '';
+  document.getElementById('add-licensed').value = (spec.licensed !== false) ? 'true' : 'false';
+  document.getElementById('add-antivirus').value = (spec.antivirus !== false) ? 'true' : 'false';
+
+  // Provenance
+  document.getElementById('add-vendor').value = asset.vendor_name || '';
+  document.getElementById('add-regno').value = asset.register_sl_no || '';
+  document.getElementById('add-billno').value = asset.bill_no || '';
+  document.getElementById('add-billdate').value = asset.bill_date ? asset.bill_date.split('T')[0] : '';
+  document.getElementById('add-cost').value = asset.unit_cost || '';
+  document.getElementById('add-remarks').value = spec.remarks || '';
+
+  document.getElementById('add-asset-modal').style.display = 'flex';
+};
+
+async function handleSaveAsset() {
+  const editId = document.getElementById('edit-asset-id').value;
+
+  const name = document.getElementById('add-name').value.trim();
+  const location = document.getElementById('add-location').value;
+  const asset_code = document.getElementById('add-code').value.trim();
+  const quantity = parseInt(document.getElementById('add-qty').value, 10) || 1;
+  const condition = document.getElementById('add-condition').value;
+  const unit_cost = parseFloat(document.getElementById('add-cost').value) || 0;
+  const vendor_name = document.getElementById('add-vendor').value.trim() || 'KLE Tech University Store';
+  const register_sl_no = parseInt(document.getElementById('add-regno').value, 10) || null;
+  const bill_no = document.getElementById('add-billno').value.trim() || null;
+  const bill_date = document.getElementById('add-billdate').value || null;
+
+  const specifications = {
+    processor: document.getElementById('add-processor').value.trim(),
+    generation: document.getElementById('add-gen').value.trim(),
+    ram: document.getElementById('add-ram').value.trim(),
+    hdd: document.getElementById('add-hdd').value.trim(),
+    monitor: document.getElementById('add-monitor').value.trim(),
+    os: document.getElementById('add-os').value.trim(),
+    licensed: document.getElementById('add-licensed').value === 'true',
+    antivirus: document.getElementById('add-antivirus').value === 'true',
+    remarks: document.getElementById('add-remarks').value.trim()
+  };
+
+  const payload = {
+    name,
+    location,
+    asset_code: asset_code || undefined,
+    quantity,
+    condition,
+    unit_cost,
+    vendor_name,
+    register_sl_no,
+    bill_no,
+    bill_date,
+    specifications
+  };
+
   try {
-    const res = await API.patch(`/api/assets/${assetId}/quantity`, { change });
+    let res;
+    if (editId) {
+      res = await API.put(`/api/assets/${editId}`, payload);
+    } else {
+      res = await API.post('/api/assets', payload);
+    }
+
     if (res.success) {
+      alert(res.message || (editId ? 'Asset updated successfully!' : 'Asset added successfully!'));
+      document.getElementById('add-asset-modal').style.display = 'none';
+      document.getElementById('add-asset-form').reset();
       await loadAssets();
       await loadSummary();
     } else {
-      alert(res.message || 'Failed to adjust quantity.');
+      alert(res.message || 'Failed to save asset.');
     }
   } catch (err) {
     console.error(err);
-    alert('Error adjusting asset quantity.');
+    alert('Server communication error while saving asset.');
   }
-};
+}
 
 window.deleteAssetUnit = async function(assetId, assetCode) {
   if (!confirm(`Are you sure you want to remove ${assetCode} from the registry?`)) {
@@ -309,54 +403,6 @@ window.deleteAssetUnit = async function(assetId, assetCode) {
     alert('Error deleting asset.');
   }
 };
-
-async function handleCreateAsset() {
-  const name = document.getElementById('add-name').value.trim();
-  const location = document.getElementById('add-location').value;
-  const asset_code = document.getElementById('add-code').value.trim();
-  const quantity = parseInt(document.getElementById('add-qty').value, 10) || 1;
-  const condition = document.getElementById('add-condition').value;
-  const unit_cost = parseFloat(document.getElementById('add-cost').value) || 0;
-  const vendor_name = document.getElementById('add-vendor').value.trim() || 'KLE Tech University Store';
-
-  const specifications = {
-    processor: document.getElementById('add-processor').value.trim(),
-    generation: document.getElementById('add-gen').value.trim(),
-    ram: document.getElementById('add-ram').value.trim(),
-    hdd: document.getElementById('add-hdd').value.trim(),
-    monitor: document.getElementById('add-monitor').value.trim(),
-    os: document.getElementById('add-os').value.trim(),
-    licensed: true,
-    antivirus: true
-  };
-
-  const payload = {
-    name,
-    location,
-    asset_code: asset_code || undefined,
-    quantity,
-    condition,
-    unit_cost,
-    vendor_name,
-    specifications
-  };
-
-  try {
-    const res = await API.post('/api/assets', payload);
-    if (res.success) {
-      alert(res.message || 'Asset added successfully!');
-      document.getElementById('add-asset-modal').style.display = 'none';
-      document.getElementById('add-asset-form').reset();
-      await loadAssets();
-      await loadSummary();
-    } else {
-      alert(res.message || 'Failed to add asset.');
-    }
-  } catch (err) {
-    console.error(err);
-    alert('Server communication error while adding asset.');
-  }
-}
 
 window.openAssetModalByIndex = function(idx) {
   if (currentAssets[idx]) {
@@ -398,17 +444,25 @@ function openAssetModal(asset) {
 
   document.getElementById('asset-modal').style.display = 'flex';
 }
-window.openAssetModal = openAssetModal;
 
 function closeModal() {
   document.getElementById('asset-modal').style.display = 'none';
 }
-window.closeModal = closeModal;
 
 function debounce(fn, delay) {
   let timer;
-  return function (...args) {
+  return function(...args) {
     clearTimeout(timer);
     timer = setTimeout(() => fn.apply(this, args), delay);
   };
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }

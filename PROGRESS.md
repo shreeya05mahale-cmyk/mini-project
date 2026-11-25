@@ -78,14 +78,21 @@ KLE Tech University IT Asset Inventory & Procurement Management System
   - Rejection immediately halts workflow and marks status as `REJECTED`.
   - Rejection grounds returned to HOD dashboard and requisition detail view.
 
-### 5. Inventory Registry & Quantity Controls (`/inventory.html`)
-- [x] **Inline Quantity Adjustments**:
-  - Added `[-]` and `[+]` quick quantity controls for each asset row with immediate server persistence (`PATCH /api/assets/:id/quantity`).
-- [x] **New Asset Ingestion Modal (`+ Add Asset Unit`)**:
-  - Modal with location dropdown, make/model, condition, unit cost, vendor, and technical specifications (processor, RAM, storage, monitor, OS).
-  - Auto-generates standard institutional asset codes (e.g., `Lab4-PC44`).
-- [x] **Asset Removal & Decommissioning**:
-  - Delete action button (`✕`) for removing decommissioned or redundant units.
+### 5. Inventory Registry & Role-Based Asset Management (`/inventory.html`)
+- [x] **Strict Role-Based Access Control (RBAC)**:
+  - Inventory modification permissions (`+ Add Asset Unit`, `Edit`, `Delete`) are strictly restricted to **InfoCell Coordinator** (`COORDINATOR`) and **System Administrator** (`ADMIN`).
+  - Read-only access for academic officers (HOD, Registrar, Vice Chancellor, Pro Chancellor).
+  - Backend route enforcement via `requireRole('ADMIN', 'COORDINATOR')` for `POST /api/assets`, `PUT /api/assets/:id`, and `DELETE /api/assets/:id`.
+- [x] **Clean Quantity Display**:
+  - Removed arbitrary inline `+` and `-` quantity buttons from table rows in favor of a clean, institutional `Qty` count display.
+- [x] **Comprehensive Asset Ingestion & Editing**:
+  - Full modal covering all institutional asset attributes displayed in registry:
+    - **Identification**: Make & Model, Lab Location (Labs 1-7, C-Lab 1-2), Asset Code, Quantity, Condition (GOOD, DAMAGED, NEW).
+    - **Technical Specifications**: Processor, Generation, RAM & Type, Storage (HDD/SSD), Monitor Specification, Operating System, Software Licensing Status (Licensed/Unlicensed), Antivirus Protection Status (Protected/Not Installed).
+    - **Provenance & Stock Register**: Inward Stock Register Entry No., Supplier / Vendor, Invoice / Bill No., Purchase Date, Unit Cost (₹), Remarks from Register.
+  - Added full edit support (`PUT /api/assets/:id`) allowing Coordinators/Admins to update all asset specifications and register details.
+- [x] **Decommissioning Store User**:
+  - Removed Store quick-login button from login screen (`public/login.html`) and stripped store role from active navigation.
 
 ### 6. Clean Navigation & Dashboard Streamlining
 - [x] Hidden future lifecycle modules (Quotations, Purchase Orders, Vendors, Goods Receipts, Stock Movements) from sidebar navigation; database tables preserved intact.

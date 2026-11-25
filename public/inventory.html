@@ -196,7 +196,7 @@
           <p class="page-subtitle">Department of Computer Science & Engineering &bull; Lab Desktop Machines</p>
         </div>
         <div>
-          <button type="button" id="btn-open-add-asset" class="btn btn-primary" style="font-weight: 700; padding: 9px 18px;">
+          <button type="button" id="btn-open-add-asset" class="btn btn-primary" style="display: none; font-weight: 700; padding: 9px 18px;">
             + Add Asset Unit
           </button>
         </div>
@@ -296,8 +296,8 @@
                 <th>Inward Reg. No</th>
                 <th>Unit Cost</th>
                 <th>Condition</th>
-                <th style="text-align: center; width: 100px;">Qty (+ / -)</th>
-                <th style="text-align: right; width: 120px;">Action</th>
+                <th style="text-align: center; width: 70px;">Qty</th>
+                <th style="text-align: right; width: 140px;">Action</th>
               </tr>
             </thead>
             <tbody id="assets-tbody">
@@ -398,19 +398,25 @@
     </div>
   </div>
 
-  <!-- Add New Asset Modal -->
+  <!-- Add / Edit Asset Modal -->
   <div id="add-asset-modal" class="modal-overlay">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 680px;">
       <div class="modal-header">
-        <div class="modal-title">+ Add New Asset Unit to Registry</div>
+        <div class="modal-title" id="add-modal-title">+ Add New Asset Unit to Registry</div>
         <button id="add-modal-close-btn" class="modal-close">&times;</button>
       </div>
       <div class="modal-body">
         <form id="add-asset-form">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
+          <input type="hidden" id="edit-asset-id" value="">
+
+          <!-- Section 1: Basic Machine Info -->
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--brand-primary); text-transform: uppercase; margin-bottom: 8px;">
+            1. Machine Identification & Location
+          </div>
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 12px; margin-bottom: 12px;">
             <div>
-              <label class="spec-label" style="margin-bottom: 4px; display: block;">Make &amp; Model *</label>
-              <input type="text" id="add-name" class="input" placeholder="e.g. HP Prodesk 400 G7 Microtower" required>
+              <label class="spec-label" style="margin-bottom: 4px; display: block;">Make &amp; Model Name *</label>
+              <input type="text" id="add-name" class="input" placeholder="e.g. HP Prodesk 400 G7 Microtower Desktop" required>
             </div>
             <div>
               <label class="spec-label" style="margin-bottom: 4px; display: block;">Lab / Location *</label>
@@ -427,52 +433,122 @@
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 12px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div>
               <label class="spec-label" style="margin-bottom: 4px; display: block;">Asset Code</label>
-              <input type="text" id="add-code" class="input" placeholder="Auto-generated if empty">
+              <input type="text" id="add-code" class="input" placeholder="Auto-generated if blank">
             </div>
             <div>
-              <label class="spec-label" style="margin-bottom: 4px; display: block;">Quantity</label>
+              <label class="spec-label" style="margin-bottom: 4px; display: block;">Quantity (Units) *</label>
               <input type="number" id="add-qty" class="input" value="1" min="1" required>
             </div>
             <div>
-              <label class="spec-label" style="margin-bottom: 4px; display: block;">Condition</label>
+              <label class="spec-label" style="margin-bottom: 4px; display: block;">Operating Condition</label>
               <select id="add-condition" class="input">
                 <option value="GOOD">Working (GOOD)</option>
                 <option value="DAMAGED">Not Working (DAMAGED)</option>
+                <option value="NEW">Brand New (NEW)</option>
               </select>
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
-            <div>
-              <label class="spec-label" style="margin-bottom: 4px; display: block;">Unit Cost (₹)</label>
-              <input type="number" id="add-cost" class="input" placeholder="e.g. 45000" min="0">
-            </div>
-            <div>
-              <label class="spec-label" style="margin-bottom: 4px; display: block;">Supplier / Vendor</label>
-              <input type="text" id="add-vendor" class="input" placeholder="e.g. KLE Tech Store / Silicon">
-            </div>
-          </div>
-
-          <div style="border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 12px; margin-bottom: 12px;">
+          <!-- Section 2: Technical Specifications -->
+          <div style="border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 12px; margin-bottom: 10px;">
             <div style="font-size: 11.5px; font-weight: 700; color: var(--brand-primary); text-transform: uppercase; margin-bottom: 8px;">
-              Technical Specifications (Optional)
+              2. Technical Specifications
             </div>
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px; margin-bottom: 10px;">
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Processor</label>
+                <input type="text" id="add-processor" class="input" placeholder="e.g. Intel Core i5 10th Gen 3.10GHz">
+              </div>
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Generation</label>
+                <input type="text" id="add-gen" class="input" placeholder="e.g. 10th Gen">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">RAM &amp; Type</label>
+                <input type="text" id="add-ram" class="input" placeholder="e.g. 8GB DDR4 2666MHz">
+              </div>
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Storage (HDD / SSD)</label>
+                <input type="text" id="add-hdd" class="input" placeholder="e.g. 1TB 7200 RPM HDD / 256GB SSD">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Monitor Specification</label>
+                <input type="text" id="add-monitor" class="input" placeholder="e.g. 18.5&quot; Acer LED Monitor">
+              </div>
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Operating System</label>
+                <input type="text" id="add-os" class="input" placeholder="e.g. Windows 10 Pro 64-bit">
+              </div>
+            </div>
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-              <input type="text" id="add-processor" class="input" placeholder="Processor (e.g. Core i5)">
-              <input type="text" id="add-gen" class="input" placeholder="Generation (e.g. 10th)">
-              <input type="text" id="add-ram" class="input" placeholder="RAM (e.g. 8 GB DDR4)">
-              <input type="text" id="add-hdd" class="input" placeholder="Storage (e.g. 1 TB HDD)">
-              <input type="text" id="add-monitor" class="input" placeholder="Monitor (e.g. 18.5&quot;)">
-              <input type="text" id="add-os" class="input" placeholder="OS (e.g. Win 11 Pro)">
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Software Licensing</label>
+                <select id="add-licensed" class="input">
+                  <option value="true" selected>✔ Yes (Licensed Windows)</option>
+                  <option value="false">✖ Unlicensed / Trial</option>
+                </select>
+              </div>
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Antivirus Protection</label>
+                <select id="add-antivirus" class="input">
+                  <option value="true" selected>✔ Active Antivirus Installed</option>
+                  <option value="false">✖ Not Installed</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <!-- Section 3: Inward Stock Register & Procurement Provenance -->
+          <div style="border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 12px; margin-bottom: 10px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--brand-primary); text-transform: uppercase; margin-bottom: 8px;">
+              3. Inward Stock Register &amp; Procurement Provenance
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px; margin-bottom: 10px;">
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Supplier / Vendor</label>
+                <input type="text" id="add-vendor" class="input" placeholder="e.g. Pursuit Technologies Pvt Ltd">
+              </div>
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Inward Stock Register Entry #</label>
+                <input type="number" id="add-regno" class="input" placeholder="e.g. 296, 728">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Invoice / Bill No.</label>
+                <input type="text" id="add-billno" class="input" placeholder="e.g. HBLINV266/21-22">
+              </div>
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Invoice / Bill Date</label>
+                <input type="date" id="add-billdate" class="input">
+              </div>
+              <div>
+                <label class="spec-label" style="margin-bottom: 4px; display: block;">Unit Cost (₹)</label>
+                <input type="number" id="add-cost" class="input" placeholder="e.g. 31828" min="0" step="0.01">
+              </div>
+            </div>
+
+            <div>
+              <label class="spec-label" style="margin-bottom: 4px; display: block;">Remarks from Stock Register</label>
+              <textarea id="add-remarks" class="input" rows="2" placeholder="e.g. Systems deployed for AI/ML lab practicals. Fully operational."></textarea>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px;">
             <button type="button" id="btn-cancel-add-asset" class="btn btn-secondary">Cancel</button>
-            <button type="submit" id="btn-submit-add-asset" class="btn btn-primary" style="font-weight: 700;">+ Save Asset to Registry</button>
+            <button type="submit" id="btn-submit-add-asset" class="btn btn-primary" style="font-weight: 700;">Save to Registry</button>
           </div>
         </form>
       </div>
