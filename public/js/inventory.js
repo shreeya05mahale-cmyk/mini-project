@@ -2,9 +2,8 @@
  * public/js/inventory.js
  *
  * Client-side script for the Inventory & Asset Registry page.
- * Lab filtering uses the canonical lab_group names from the API
- * ('Lab 1', 'Lab 2', ... 'C-Lab 1', 'C-Lab 2') which map to
- * backend SQL CASE expressions in assetController.js.
+ * Supports lab filtering, full-text specs search, hardware modal,
+ * quantity adjustments (+ / -), adding new assets, and deletion.
  */
 
 let currentPage = 1;
@@ -66,10 +65,30 @@ function setupEventListeners() {
     }
   });
 
-  // Modal close handlers
+  // Details Modal close handlers
   document.getElementById('modal-close-btn').addEventListener('click', closeModal);
   document.getElementById('asset-modal').addEventListener('click', (e) => {
     if (e.target.id === 'asset-modal') closeModal();
+  });
+
+  // Add Asset Modal Handlers
+  const addModal = document.getElementById('add-asset-modal');
+  document.getElementById('btn-open-add-asset').addEventListener('click', () => {
+    addModal.style.display = 'flex';
+  });
+  document.getElementById('add-modal-close-btn').addEventListener('click', () => {
+    addModal.style.display = 'none';
+  });
+  document.getElementById('btn-cancel-add-asset').addEventListener('click', () => {
+    addModal.style.display = 'none';
+  });
+  addModal.addEventListener('click', (e) => {
+    if (e.target.id === 'add-asset-modal') addModal.style.display = 'none';
+  });
+
+  document.getElementById('add-asset-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await handleCreateAsset();
   });
 
   // Lab cards container event delegation
@@ -83,10 +102,14 @@ function setupEventListeners() {
     });
   }
 
-  // Assets table body event delegation (avoids brittle JSON in inline HTML attributes)
+  // Assets table body event delegation
   const tbody = document.getElementById('assets-tbody');
   if (tbody) {
     tbody.addEventListener('click', (e) => {
+      // If clicking quantity buttons or delete button, do not open details modal
+      if (e.target.closest('.qty-btn') || e.target.closest('.btn-delete-asset')) {
+        return;
+      }
       const row = e.target.closest('.clickable-row');
       if (!row) return;
       const idx = parseInt(row.getAttribute('data-index'), 10);
@@ -142,7 +165,6 @@ function renderLabPills(labs, totalAll) {
 function selectLabPill(labGroup) {
   selectedLabGroup = labGroup;
 
-  // Sync dropdown: set to the matching option value or empty
   const labSelect = document.getElementById('lab-select');
   if (labSelect) {
     labSelect.value = labGroup;
@@ -171,7 +193,7 @@ async function loadAssets() {
   const tbody = document.getElementById('assets-tbody');
   tbody.innerHTML = `
     <tr>
-      <td colspan="8" style="text-align: center; padding: 24px; color: var(--text-subtle);">
+      <td colspan="9" style="text-align: center; padding: 24px; color: var(--text-subtle);">
         Loading records...
       </td>
     </tr>
@@ -190,7 +212,7 @@ async function loadAssets() {
     const res = await API.get(`/api/assets?${queryParams.toString()}`);
     if (!res.success || !res.assets) {
       currentAssets = [];
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 20px;">No assets found.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px;">No assets found.</td></tr>`;
       return;
     }
 
@@ -202,7 +224,7 @@ async function loadAssets() {
     updatePagination(res.page, res.totalPages);
 
     if (res.assets.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 28px; color: var(--text-subtle);">No matching computers found for the selected filters.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 28px; color: var(--text-subtle);">No matching computers found for the selected filters.</td></tr>`;
       return;
     }
 
@@ -219,6 +241,8 @@ async function loadAssets() {
         ? `₹${Number(a.unit_cost).toLocaleString('en-IN')}`
         : '-';
 
+      const qty = parseInt(a.quantity, 10) || 1;
+
       return `
         <tr class="clickable-row" data-index="${idx}">
           <td style="font-weight: 600; font-family: monospace; color: var(--brand-primary);">${escapeHtml(a.asset_code)}</td>
@@ -228,8 +252,20 @@ async function loadAssets() {
           <td>${regTag}</td>
           <td style="font-size: 12px; font-weight: 600;">${costDisplay}</td>
           <td>${conditionBadge}</td>
-          <td style="text-align: right;">
-            <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 11px;">Details</button>
+          
+          <!-- Inline Quantity Plus and Minus Controls -->
+          <td style="text-align: center;" onclick="event.stopPropagation();">
+            <div style="display: inline-flex; align-items: center; gap: 4px;">
+              <button type="button" class="qty-btn" title="Decrease Quantity (-1)" onclick="adjustQuantity(${a.asset_id}, -1)">&minus;</button>
+              <span class="qty-display">${qty}</span>
+              <button type="button" class="qty-btn" title="Increase Quantity (+1)" onclick="adjustQuantity(${a.asset_id}, +1)">&plus;</button>
+            </div>
+          </td>
+
+          <!-- Actions -->
+          <td style="text-align: right;" onclick="event.stopPropagation();">
+            <button class="btn btn-secondary btn-sm" onclick="openAssetModalByIndex(${idx})" style="padding: 4px 8px; font-size: 11px;">Details</button>
+            <button class="btn btn-secondary btn-sm btn-delete-asset" title="Remove Asset" onclick="deleteAssetUnit(${a.asset_id}, '${escapeHtml(a.asset_code)}')" style="padding: 4px 6px; font-size: 11px; color: #ef4444; margin-left: 4px;">&times;</button>
           </td>
         </tr>
       `;
@@ -237,9 +273,96 @@ async function loadAssets() {
 
   } catch (err) {
     console.error('Error fetching assets:', err);
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 20px; color: #b91c1c;">Failed to load assets: ${escapeHtml(err.message)}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #b91c1c;">Failed to load assets: ${escapeHtml(err.message)}</td></tr>`;
   }
 }
+
+window.adjustQuantity = async function(assetId, change) {
+  try {
+    const res = await API.patch(`/api/assets/${assetId}/quantity`, { change });
+    if (res.success) {
+      await loadAssets();
+      await loadSummary();
+    } else {
+      alert(res.message || 'Failed to adjust quantity.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Error adjusting asset quantity.');
+  }
+};
+
+window.deleteAssetUnit = async function(assetId, assetCode) {
+  if (!confirm(`Are you sure you want to remove ${assetCode} from the registry?`)) {
+    return;
+  }
+  try {
+    const res = await API.delete(`/api/assets/${assetId}`);
+    if (res.success) {
+      await loadAssets();
+      await loadSummary();
+    } else {
+      alert(res.message || 'Failed to delete asset.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Error deleting asset.');
+  }
+};
+
+async function handleCreateAsset() {
+  const name = document.getElementById('add-name').value.trim();
+  const location = document.getElementById('add-location').value;
+  const asset_code = document.getElementById('add-code').value.trim();
+  const quantity = parseInt(document.getElementById('add-qty').value, 10) || 1;
+  const condition = document.getElementById('add-condition').value;
+  const unit_cost = parseFloat(document.getElementById('add-cost').value) || 0;
+  const vendor_name = document.getElementById('add-vendor').value.trim() || 'KLE Tech University Store';
+
+  const specifications = {
+    processor: document.getElementById('add-processor').value.trim(),
+    generation: document.getElementById('add-gen').value.trim(),
+    ram: document.getElementById('add-ram').value.trim(),
+    hdd: document.getElementById('add-hdd').value.trim(),
+    monitor: document.getElementById('add-monitor').value.trim(),
+    os: document.getElementById('add-os').value.trim(),
+    licensed: true,
+    antivirus: true
+  };
+
+  const payload = {
+    name,
+    location,
+    asset_code: asset_code || undefined,
+    quantity,
+    condition,
+    unit_cost,
+    vendor_name,
+    specifications
+  };
+
+  try {
+    const res = await API.post('/api/assets', payload);
+    if (res.success) {
+      alert(res.message || 'Asset added successfully!');
+      document.getElementById('add-asset-modal').style.display = 'none';
+      document.getElementById('add-asset-form').reset();
+      await loadAssets();
+      await loadSummary();
+    } else {
+      alert(res.message || 'Failed to add asset.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Server communication error while adding asset.');
+  }
+}
+
+window.openAssetModalByIndex = function(idx) {
+  if (currentAssets[idx]) {
+    openAssetModal(currentAssets[idx]);
+  }
+};
 
 function updatePagination(page, totalPages) {
   totalPagesCount = Math.max(totalPages || 1, 1);

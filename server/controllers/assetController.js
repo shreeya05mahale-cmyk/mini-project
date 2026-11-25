@@ -181,8 +181,129 @@ async function getAssetById(req, res, next) {
   }
 }
 
+/**
+ * POST /api/assets
+ * Add a new asset / computer unit to a lab.
+ */
+async function createAsset(req, res, next) {
+  try {
+    const {
+      asset_code,
+      name,
+      location = 'Lab 1',
+      condition = 'GOOD',
+      quantity = 1,
+      unit_cost = 0,
+      vendor_name = 'KLE Tech University Store',
+      specifications = {}
+    } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: 'Asset make / model name is required.' });
+    }
+
+    // Auto-generate asset code if not supplied (e.g. Lab1-PC44)
+    let finalCode = asset_code ? asset_code.trim() : null;
+    if (!finalCode) {
+      const cleanLab = location.replace(/[^a-zA-Z0-9]/g, '');
+      const countRes = await query("SELECT COUNT(*) AS c FROM assets WHERE location ILIKE $1;", [`%${location}%`]);
+      const nextNum = parseInt(countRes.rows[0].c, 10) + 1;
+      finalCode = `${cleanLab}-PC${nextNum}`;
+    }
+
+    const insertSql = `
+      INSERT INTO assets (asset_code, name, type, location, condition, quantity, unit_cost, vendor_name, specifications, dept_id)
+      VALUES ($1, $2, 'DURABLE', $3, $4, $5, $6, $7, $8, 1)
+      RETURNING *;
+    `;
+
+    const result = await query(insertSql, [
+      finalCode,
+      name.trim(),
+      location.trim(),
+      condition,
+      parseInt(quantity, 10) || 1,
+      parseFloat(unit_cost) || 0,
+      vendor_name.trim(),
+      JSON.stringify(specifications)
+    ]);
+
+    res.status(201).json({
+      success: true,
+      message: `Asset ${finalCode} added to ${location} successfully.`,
+      asset: result.rows[0]
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * PATCH /api/assets/:id/quantity
+ * Increment (+1) or decrement (-1) quantity.
+ */
+async function adjustQuantity(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { change } = req.body; // +1 or -1
+
+    const numChange = parseInt(change, 10);
+    if (isNaN(numChange)) {
+      return res.status(400).json({ success: false, message: 'Invalid change value.' });
+    }
+
+    const updateSql = `
+      UPDATE assets 
+      SET quantity = GREATEST(quantity + $1, 0)
+      WHERE asset_id::text = $2 OR asset_code = $2
+      RETURNING *;
+    `;
+    const result = await query(updateSql, [numChange, id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Asset not found.' });
+    }
+
+    res.json({
+      success: true,
+      message: `Quantity adjusted for ${result.rows[0].asset_code}. New Quantity: ${result.rows[0].quantity}`,
+      asset: result.rows[0]
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * DELETE /api/assets/:id
+ * Remove / retire an asset from the inventory.
+ */
+async function deleteAsset(req, res, next) {
+  try {
+    const { id } = req.params;
+    const result = await query(
+      `DELETE FROM assets WHERE asset_id::text = $1 OR asset_code = $1 RETURNING *;`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Asset not found.' });
+    }
+
+    res.json({
+      success: true,
+      message: `Asset ${result.rows[0].asset_code} removed from registry successfully.`
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getAssets,
   getInventorySummary,
-  getAssetById
+  getAssetById,
+  createAsset,
+  adjustQuantity,
+  deleteAsset
 };

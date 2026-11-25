@@ -104,6 +104,11 @@
 
           const titleText = r.subject || r.justification;
 
+          const amt = parseFloat(r.total_amount);
+          const valuationDisplay = (isNaN(amt) || amt <= 0)
+            ? '<span style="color: var(--text-subtle); font-style: italic; font-size: 12px;">Pending Scrutiny</span>'
+            : `₹${amt.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+
           return `
             <tr>
               <td style="font-weight: 700; color: var(--brand-primary); font-family: monospace;">#REQ-${String(r.request_id).padStart(3, '0')}</td>
@@ -113,7 +118,7 @@
                 <strong>${escapeHtml(titleText)}</strong>
                 <div style="font-size: 11px; color: var(--text-subtle);">${escapeHtml(r.formatted_date)}</div>
               </td>
-              <td style="font-weight: 700; font-family: monospace;">₹${Number(r.total_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+              <td style="font-weight: 700; font-family: monospace;">${valuationDisplay}</td>
               <td><span class="status-badge ${badgeClass}">${escapeHtml(r.status.replace('_', ' '))}</span></td>
               <td style="text-align: right;">
                 <a href="/request-detail.html?id=${r.request_id}" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 11px;">View Letter &rarr;</a>

@@ -69,7 +69,7 @@ async function getPendingApprovals(req, res, next) {
 async function recordDecision(req, res, next) {
   try {
     const { requestId } = req.params;
-    const { decision, remarks } = req.body;
+    const { decision, remarks, estimated_cost, tier } = req.body;
     const user = req.session.user;
 
     if (!['APPROVED', 'REJECTED'].includes(decision)) {
@@ -141,7 +141,49 @@ async function recordDecision(req, res, next) {
         [decision, user.user_id, remarks ? remarks.trim() : null, requestId, currentStep.approval_id]
       );
 
-      // 5. Update overall request status
+      // 5. If InfoCell Coordinator is approving, establish the cost valuation & dynamic downstream hierarchy
+      if (user.role === 'COORDINATOR' && decision === 'APPROVED') {
+        const cost = parseFloat(estimated_cost) || 0;
+        let selectedTier = tier;
+        if (!selectedTier) {
+          if (cost <= 50000) selectedTier = 'TIER_1';
+          else if (cost <= 200000) selectedTier = 'TIER_2';
+          else selectedTier = 'TIER_3';
+        }
+
+        let downstreamRoles = [];
+        if (selectedTier === 'TIER_1') {
+          downstreamRoles = ['REGISTRAR'];
+        } else if (selectedTier === 'TIER_2') {
+          downstreamRoles = ['REGISTRAR', 'VC'];
+        } else {
+          downstreamRoles = ['REGISTRAR', 'VC', 'PC'];
+        }
+
+        // Save estimated valuation on purchase_requests
+        await client.query(
+          `UPDATE purchase_requests SET total_amount = $1 WHERE request_id = $2;`,
+          [cost, requestId]
+        );
+
+        // Delete any pre-existing downstream steps and insert the new dynamic path
+        await client.query(
+          `DELETE FROM approvals WHERE request_id = $1 AND step_order > $2;`,
+          [requestId, currentStep.step_order]
+        );
+
+        for (let i = 0; i < downstreamRoles.length; i++) {
+          const role = downstreamRoles[i];
+          const stepOrder = currentStep.step_order + 1 + i;
+          await client.query(
+            `INSERT INTO approvals (request_id, approval_id, approver_role, step_order, decision)
+             VALUES ($1, $2, $3, $4, 'PENDING');`,
+            [requestId, stepOrder, role, stepOrder]
+          );
+        }
+      }
+
+      // 6. Update overall request status
       if (decision === 'REJECTED') {
         // Circuit breaker: immediately reject the request
         await client.query(

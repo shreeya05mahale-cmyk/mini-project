@@ -152,6 +152,36 @@
           Loading docket details...
         </div>
 
+        <!-- InfoCell Coordinator Cost Valuation & Tier Selection (Visible only to Coordinator) -->
+        <div id="coordinator-cost-tier-section" style="display: none; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 14px 16px; margin-bottom: 18px;">
+          <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #166534; margin-bottom: 8px;">
+            InfoCell Technical Cost Estimation &amp; Hierarchy Tier Selection
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 10px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #1e3a8a; margin-bottom: 4px;">
+                Estimated Total Cost (₹) *
+              </label>
+              <input type="number" id="coordinator-cost-input" class="input" style="font-weight: 700; font-family: monospace;" placeholder="e.g. 180000" min="0">
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #1e3a8a; margin-bottom: 4px;">
+                Approval Hierarchy Tier *
+              </label>
+              <select id="coordinator-tier-select" class="input" style="font-weight: 600;">
+                <option value="TIER_1">Tier 1 (≤ ₹50,000) &rarr; Registrar</option>
+                <option value="TIER_2">Tier 2 (₹50,001 - ₹2,00,000) &rarr; Registrar &rarr; VC</option>
+                <option value="TIER_3">Tier 3 (Above ₹2,00,000) &rarr; Registrar &rarr; VC &rarr; PC</option>
+              </select>
+            </div>
+          </div>
+          
+          <div id="coordinator-tier-hint" style="font-size: 11.5px; color: #15803d; font-weight: 600;">
+            Selected Route: Coordinator &rarr; Registrar &rarr; Vice Chancellor
+          </div>
+        </div>
+
         <!-- Scrutiny Remarks Field -->
         <div class="input-group">
           <label class="input-label" for="decision-remarks" style="font-weight: 700; font-size: 12.5px;">
@@ -256,19 +286,65 @@
         PC: 'Pro Chancellor (Final Institutional Clearance)'
       };
 
+      const valuationText = (total && Number(total) > 0)
+        ? `₹${Number(total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+        : '<span style="color: #64748b; font-style: italic;">To be estimated by InfoCell Coordinator</span>';
+
       document.getElementById('modal-summary').innerHTML = `
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
           <div><strong>Department:</strong> ${escapeHtml(dept)}</div>
           <div><strong>Initiator:</strong> ${escapeHtml(submitter)}</div>
         </div>
-        <div style="margin-bottom: 8px;"><strong>Justification:</strong> ${escapeHtml(justification)}</div>
-        <div style="font-size: 14px; font-weight: 800; color: #0f172a;">
-          Total Valuation: ₹${Number(total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+        <div style="margin-bottom: 8px;"><strong>Subject / Justification:</strong> ${escapeHtml(justification)}</div>
+        <div style="font-size: 13.5px; font-weight: 700; color: #0f172a;">
+          Total Valuation: ${valuationText}
         </div>
         <div style="margin-top: 10px; font-size: 11px; color: #2563eb;">
           Acting as: <strong>${roleTitles[currentUserRole] || currentUserRole}</strong>
         </div>
       `;
+
+      // InfoCell Coordinator specific cost/tier section
+      const coordSection = document.getElementById('coordinator-cost-tier-section');
+      if (currentUserRole === 'COORDINATOR') {
+        coordSection.style.display = 'block';
+        const costInput = document.getElementById('coordinator-cost-input');
+        const tierSelect = document.getElementById('coordinator-tier-select');
+        const hintEl = document.getElementById('coordinator-tier-hint');
+
+        costInput.value = (total && Number(total) > 0) ? total : '180000';
+        updateTierFromCost();
+
+        costInput.oninput = updateTierFromCost;
+        tierSelect.onchange = updateHintFromTier;
+
+        function updateTierFromCost() {
+          const c = parseFloat(costInput.value) || 0;
+          if (c <= 50000) {
+            tierSelect.value = 'TIER_1';
+            hintEl.textContent = 'Selected Route: Coordinator → Registrar';
+          } else if (c <= 200000) {
+            tierSelect.value = 'TIER_2';
+            hintEl.textContent = 'Selected Route: Coordinator → Registrar → Vice Chancellor';
+          } else {
+            tierSelect.value = 'TIER_3';
+            hintEl.textContent = 'Selected Route: Coordinator → Registrar → Vice Chancellor → Pro Chancellor';
+          }
+        }
+
+        function updateHintFromTier() {
+          const t = tierSelect.value;
+          if (t === 'TIER_1') {
+            hintEl.textContent = 'Selected Route: Coordinator → Registrar';
+          } else if (t === 'TIER_2') {
+            hintEl.textContent = 'Selected Route: Coordinator → Registrar → Vice Chancellor';
+          } else {
+            hintEl.textContent = 'Selected Route: Coordinator → Registrar → Vice Chancellor → Pro Chancellor';
+          }
+        }
+      } else {
+        coordSection.style.display = 'none';
+      }
 
       // Set recommended default remarks for quick viva demonstration
       const remarksInput = document.getElementById('decision-remarks');
@@ -301,6 +377,20 @@
         return;
       }
 
+      let estimatedCost = 0;
+      let selectedTier = '';
+
+      if (currentUserRole === 'COORDINATOR' && decision === 'APPROVED') {
+        estimatedCost = parseFloat(document.getElementById('coordinator-cost-input').value) || 0;
+        selectedTier = document.getElementById('coordinator-tier-select').value;
+
+        if (estimatedCost <= 0) {
+          alert('Please enter a valid estimated valuation (₹) for this requisition.');
+          document.getElementById('coordinator-cost-input').focus();
+          return;
+        }
+      }
+
       const confirmMsg = decision === 'APPROVED' 
         ? 'Are you sure you want to endorse and forward this requisition?' 
         : 'Are you sure you want to REJECT this requisition? This will halt the hierarchy and notify the HOD.';
@@ -308,10 +398,16 @@
       if (!confirm(confirmMsg)) return;
 
       try {
-        const res = await API.post(`/api/approvals/${activeRequestId}/decision`, {
+        const payload = {
           decision,
           remarks
-        });
+        };
+        if (currentUserRole === 'COORDINATOR' && decision === 'APPROVED') {
+          payload.estimated_cost = estimatedCost;
+          payload.tier = selectedTier;
+        }
+
+        const res = await API.post(`/api/approvals/${activeRequestId}/decision`, payload);
 
         if (res.success) {
           alert(`Official Decision Recorded!\n\n${res.message}`);

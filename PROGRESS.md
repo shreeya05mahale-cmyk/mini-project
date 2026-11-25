@@ -56,31 +56,54 @@ KLE Tech University IT Asset Inventory & Procurement Management System
   - Exact match of the university's official **"PROCUREMENT REQUISITION FORM"** (`https://tinyurl.com/Procurement-Form2026`).
   - Top header: KLE Technological University (left) & bold **INFOCELL** heading (right).
   - Centered underlined title: **PROCUREMENT REQUISITION FORM**.
-  - Ref No, Date, From (Head of the Department, CSE), To (The Coordinator, Information Services Cell, Hubballi).
-  - Approximate Budget & Expenditure Head field.
-  - Official 7-column equipment table: Sl. No., Details of material/equipment, Specification, Qty, Approx Unit Price, Location, Purpose, ISR No. & Date of Purchase.
-  - Stacked remarks & signature blocks matching document:
-    - Block 1: Remarks (left) + Seal & Signature of the HoD (right)
-    - Block 2: Remarks (left) + Signature of Infocell Coordinator (right)
-    - Block 3: Remarks (left) + Signature of the Registrar (right)
-    - (+ Vice Chancellor and Pro Chancellor blocks for Tier 2 and Tier 3 thresholds).
+  - Dynamic Reference ID (`KLE-TECH/INFOCELL/REQ/2026/001`) fetching next sequence number in real time.
+  - Real-time date display (`new Date()`).
+  - From: Head of the Department (CSE) | To: The Coordinator, Information Services Cell, Hubballi.
+  - Pure 7-column academic requirement table: Sl. No., Details of material/equipment, Specification, Qty, Location, Purpose, ISR No. & Date of Purchase.
+  - Placeholders used across all inputs instead of pre-filled static text.
   - Mandatory footnote: *Note: ISR number and Date of Purchase details field is mandatory for repair/ replacement of consumables/equipments.*
-- [x] **Hierarchical Approval Routing Engine (`server/config/approvalRules.js`)**:
-  - Tier 1 ($\le$ ₹50,000): HOD $\rightarrow$ Coordinator $\rightarrow$ Registrar
-  - Tier 2 (> ₹50,000 and $\le$ ₹2,00,000): HOD $\rightarrow$ Coordinator $\rightarrow$ Registrar $\rightarrow$ Vice Chancellor
-  - Tier 3 (> ₹2,00,000): HOD $\rightarrow$ Coordinator $\rightarrow$ Registrar $\rightarrow$ VC $\rightarrow$ Pro Chancellor (PC)
-- [x] **Official Letter View & Digital Endorsement Trail (`/request-detail.html`)**:
-  - Full authentic institutional document view with print formatting (`window.print()`).
-  - Digital endorsement stamp cards for every officer in the chain showing timestamps, verification remarks, and statuses.
-- [x] **Technical Scrutiny & Approval Inbox (`/approvals.html`)**:
-  - Coordinator scrutiny docket with verification note inputs and quick actions.
-  - Sequential enforcement: no step can be approved until the prior officer has endorsed.
-- [x] **Rejection Circuit Breaker & Instant HOD Notification**:
-  - Rejection halts the workflow and marks status as `REJECTED`.
-  - Mandatory scrutiny grounds recorded in database.
-  - HOD dashboard immediately displays prominent rejection alert banners and notification badges with exact scrutiny remarks.
-- [x] **End-to-End Verification**:
-  - Automated test script `scripts/verify-letter-workflow.js` verifies submission, sequential multi-role endorsements, final approval, and rejection alerting.
+- [x] **Gatekeeper Technical Scrutiny & Dynamic Tier Routing**:
+  - HOD submits equipment needs without vendor price valuations.
+  - Request routes directly to InfoCell Coordinator (`COORDINATOR`).
+  - In `/approvals.html`, the Coordinator inspects the technical requirements, inputs the estimated market cost (₹), and selects the approval tier:
+    - **Tier 1** ($\le$ ₹50,000): Dynamically routes to Registrar.
+    - **Tier 2** (₹50,000 to ₹2,00,000): Dynamically routes to Registrar $\rightarrow$ Vice Chancellor.
+    - **Tier 3** (> ₹2,00,000): Dynamically routes to Registrar $\rightarrow$ Vice Chancellor $\rightarrow$ Pro Chancellor.
+  - Total request amount updated upon Coordinator valuation.
+- [x] **Official Document View & Sequential Approval Trail (`/request-detail.html`)**:
+  - Authentic 7-column university format with institutional stamp cards.
+  - Displays "Awaiting InfoCell Coordinator Market Valuation" until coordinator scrutiny is complete.
+  - Sequential enforcement: no downstream authority can act until prior officer approves.
+- [x] **Rejection Circuit Breaker**:
+  - Rejection immediately halts workflow and marks status as `REJECTED`.
+  - Rejection grounds returned to HOD dashboard and requisition detail view.
+
+### 5. Inventory Registry & Quantity Controls (`/inventory.html`)
+- [x] **Inline Quantity Adjustments**:
+  - Added `[-]` and `[+]` quick quantity controls for each asset row with immediate server persistence (`PATCH /api/assets/:id/quantity`).
+- [x] **New Asset Ingestion Modal (`+ Add Asset Unit`)**:
+  - Modal with location dropdown, make/model, condition, unit cost, vendor, and technical specifications (processor, RAM, storage, monitor, OS).
+  - Auto-generates standard institutional asset codes (e.g., `Lab4-PC44`).
+- [x] **Asset Removal & Decommissioning**:
+  - Delete action button (`✕`) for removing decommissioned or redundant units.
+
+### 6. Clean Navigation & Dashboard Streamlining
+- [x] Hidden future lifecycle modules (Quotations, Purchase Orders, Vendors, Goods Receipts, Stock Movements) from sidebar navigation; database tables preserved intact.
+- [x] Streamlined Dashboard (`/index.html`):
+  - Removed "Logged in as HOD..." subtitle; displays clean "Welcome back, [First Name]".
+  - Removed duplicate quick action card.
+  - Prominently placed "Recent Purchase Requests" table at the top directly beneath core metrics.
+  - Kept "+ New Purchase Request" button strictly inside the Purchase Requests tab (`/requests.html`).
+- [x] Reset request sequence to clean ID sequence starting from **#1**.
+
+### 7. Automated End-to-End Test Suite (`scripts/test-e2e-suite.js`)
+- [x] Automated script testing:
+  - Sequence starting at #1 (`KLE-TECH/INFOCELL/REQ/2026/001`).
+  - HOD submission with 0 default price.
+  - Coordinator valuation (₹1,80,000) and dynamic Tier 2 routing.
+  - Registrar endorsement and Vice Chancellor final `APPROVED` status.
+  - Immediate circuit breaking on Rejection (Request #2).
+  - Inventory unit creation, quantity increment (`+1`), decrement (`-1`), and deletion.
 
 ---
 
@@ -89,4 +112,4 @@ KLE Tech University IT Asset Inventory & Procurement Management System
 1. **Phase 5: Quotations & Purchase Order Generation (Engine 1 - Procurement)**
    - Quotation entry and comparative statement matrix.
    - Designated supplier assignment from registered vendors.
-   - Official Purchase Order generation matching `documents/WhatsApp Image 2026-11-19 at 11.07.41.jpeg`.
+   - Official Purchase Order generation matching university physical purchase order copies.

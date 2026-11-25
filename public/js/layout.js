@@ -99,6 +99,7 @@ function renderSidebar(user, notifs) {
   const currentPath = window.location.pathname;
 
   // Master definition of navigation items with role permissions
+  // (Focused on current scope: Dashboard, Requests, Approvals, and Inventory)
   const navItems = [
     {
       title: 'Dashboard',
@@ -118,45 +119,9 @@ function renderSidebar(user, notifs) {
       badgeClass: 'nav-badge-pending'
     },
     {
-      title: 'Suppliers',
-      url: '/suppliers.html',
-      roles: ['ADMIN', 'COORDINATOR']
-    },
-    {
-      title: 'Quotations',
-      url: '/quotations.html',
-      roles: ['ADMIN', 'COORDINATOR']
-    },
-    {
-      title: 'Purchase Orders',
-      url: '/purchase-orders.html',
-      roles: ['ADMIN', 'COORDINATOR', 'STORE', 'REGISTRAR', 'VC', 'PC'],
-      badge: (user.role === 'STORE' && notifs.pendingDeliveries > 0) ? notifs.pendingDeliveries : null
-    },
-    {
-      title: 'Goods Receipts',
-      url: '/goods-receipts.html',
-      roles: ['ADMIN', 'STORE']
-    },
-    {
-      title: 'Inventory & Ledger',
+      title: 'Inventory & Registry',
       url: '/inventory.html',
-      roles: ['ADMIN', 'STORE', 'HOD', 'COORDINATOR']
-    },
-    {
-      title: 'Stock Movements',
-      url: '/stock-movements.html',
-      roles: ['ADMIN', 'STORE']
-    },
-    {
-      title: 'Reports & Audits',
-      url: '/reports.html',
-      roles: ['ADMIN', 'REGISTRAR', 'VC', 'PC', 'COORDINATOR', 'STORE', 'HOD']
-    },
-    {
-      title: 'User Management',
-      url: '/users.html',
-      roles: ['ADMIN']
+      roles: ['ADMIN', 'STORE', 'HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC']
     }
   ];
 

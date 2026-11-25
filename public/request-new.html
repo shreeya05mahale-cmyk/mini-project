@@ -10,8 +10,8 @@
       width: 100%;
       border: 1px solid #cbd5e1;
       border-radius: 4px;
-      padding: 6px 8px;
-      font-size: 12px;
+      padding: 7px 10px;
+      font-size: 13px;
       font-family: inherit;
       background: #ffffff;
       outline: none;
@@ -34,18 +34,6 @@
     }
     .letter-input-inline:focus {
       border-bottom: 2px solid var(--brand-primary);
-    }
-    .tier-indicator {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      border-left: 4px solid #2563eb;
-      padding: 12px 18px;
-      border-radius: 6px;
-      margin-top: 20px;
-      margin-bottom: 20px;
     }
     .btn-remove-row {
       background: none;
@@ -89,7 +77,7 @@
       <!-- Institutional Guidance -->
       <div style="max-width: 1020px; margin: 0 auto 20px auto; padding: 12px 18px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 13px; color: #1e40af; display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <strong>🏛️ Official InfoCell Template:</strong> Modeled after the official university requisition document. Upon submission, it is digitally signed and forwarded to the <strong>InfoCell Coordinator</strong> for technical scrutiny.
+          <strong>🏛️ Academic Requisition:</strong> State the equipment requirements below. Upon your digital submission, the request is forwarded to the <strong>InfoCell Coordinator</strong> who conducts technical scrutiny and sets the procurement cost tier.
         </div>
       </div>
 
@@ -97,7 +85,7 @@
         <!-- The Official Letter Sheet -->
         <div class="letter-sheet" style="max-width: 1020px;">
           
-          <!-- Top Header: Logo/Uni Name Left + INFOCELL Right -->
+          <!-- Top Header: Uni Name Left + INFOCELL Right -->
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 14px; margin-bottom: 18px;">
             <div>
               <div style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px;">KLE TECHNOLOGICAL UNIVERSITY</div>
@@ -115,11 +103,11 @@
             </span>
           </div>
 
-          <!-- Date -->
+          <!-- Dynamic Ref No & Date -->
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 13.5px;">
             <div>
               <span>Ref No: </span>
-              <strong style="font-family: monospace; color: #0f172a;">KLE-TECH/INFOCELL/REQ/2026/NEW</strong>
+              <strong id="ref-no-display" style="font-family: monospace; color: #0f172a;">Loading reference...</strong>
             </div>
             <div>
               <span style="font-weight: 600;">Date: </span>
@@ -156,14 +144,13 @@
                 id="expenditure-head" 
                 class="letter-input-inline" 
                 style="flex: 1; min-width: 280px;" 
-                placeholder="e.g., CSE Dept Computing Infrastructure & Lab Modernization Fund" 
-                value="CSE Dept Computing Infrastructure & Lab Modernization Fund"
+                placeholder="e.g. CSE Dept Computing Infrastructure & Lab Modernization Fund" 
                 required
               >
             </div>
           </div>
 
-          <!-- Materials / Equipment Table -->
+          <!-- Materials / Equipment Table: Exact 7 Columns from Official Form -->
           <div style="margin-bottom: 18px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <div style="font-size: 12.5px; font-weight: 700; color: #0f172a; text-transform: uppercase;">
@@ -177,48 +164,31 @@
             <table class="letter-table" style="border: 1px solid #0f172a;">
               <thead>
                 <tr style="background: #bfbfbf; color: #000000; border-bottom: 1px solid #0f172a;">
-                  <th style="width: 4%; text-align: center; border: 1px solid #0f172a; padding: 6px 4px;">Sl. No.</th>
-                  <th style="width: 17%; border: 1px solid #0f172a; padding: 6px 6px;">Details of material/ equipment *</th>
-                  <th style="width: 20%; border: 1px solid #0f172a; padding: 6px 6px;">Specification</th>
-                  <th style="width: 6%; text-align: center; border: 1px solid #0f172a; padding: 6px 4px;">Qty *</th>
-                  <th style="width: 10%; text-align: right; border: 1px solid #0f172a; padding: 6px 6px;">Approx Price (₹) *</th>
-                  <th style="width: 10%; text-align: right; border: 1px solid #0f172a; padding: 6px 6px;">Total (₹)</th>
-                  <th style="width: 11%; border: 1px solid #0f172a; padding: 6px 6px;">Location</th>
-                  <th style="width: 11%; border: 1px solid #0f172a; padding: 6px 6px;">Purpose</th>
-                  <th style="width: 8%; border: 1px solid #0f172a; padding: 6px 6px;">ISR No. & Date *</th>
-                  <th style="width: 3%; border: 1px solid #0f172a; padding: 6px 2px;"></th>
+                  <th style="width: 5%; text-align: center; border: 1px solid #0f172a; padding: 7px 4px;">Sl. No.</th>
+                  <th style="width: 23%; border: 1px solid #0f172a; padding: 7px 6px;">Details of material/ equipment *</th>
+                  <th style="width: 24%; border: 1px solid #0f172a; padding: 7px 6px;">Specification</th>
+                  <th style="width: 7%; text-align: center; border: 1px solid #0f172a; padding: 7px 4px;">Qty *</th>
+                  <th style="width: 13%; border: 1px solid #0f172a; padding: 7px 6px;">Location</th>
+                  <th style="width: 14%; border: 1px solid #0f172a; padding: 7px 6px;">Purpose</th>
+                  <th style="width: 11%; border: 1px solid #0f172a; padding: 7px 6px;">ISR No. & Date *</th>
+                  <th style="width: 3%; border: 1px solid #0f172a; padding: 7px 2px;"></th>
                 </tr>
               </thead>
               <tbody id="items-tbody">
                 <!-- Injected dynamically by JS -->
               </tbody>
-              <tfoot>
-                <tr style="border-top: 1px solid #0f172a; background: #f8fafc;">
-                  <td colspan="5" style="text-align: right; font-weight: 800; border: 1px solid #0f172a; padding: 8px;">Total Estimated Outlay:</td>
-                  <td id="grand-total-display" style="text-align: right; font-weight: 800; font-family: monospace; font-size: 13.5px; color: #0f172a; border: 1px solid #0f172a; padding: 8px;">₹0.00</td>
-                  <td colspan="4" style="border: 1px solid #0f172a;"></td>
-                </tr>
-              </tfoot>
             </table>
           </div>
 
-          <!-- Approval Hierarchy Preview -->
-          <div class="tier-indicator">
+          <!-- Workflow Notice -->
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #2563eb; padding: 10px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 12px; color: #1e3a8a; display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">
-                Governing Approval Hierarchy Path
-              </div>
-              <div id="tier-chain-display" style="font-size: 13px; font-weight: 800; color: #1e3a8a; margin-top: 2px;">
-                HOD &rarr; InfoCell Coordinator &rarr; Registrar
-              </div>
-            </div>
-            <div id="tier-badge-display" class="stamp-badge approved" style="font-size: 11px; padding: 4px 10px;">
-              Tier 1 (&le; ₹50,000)
+              <strong>Hierarchy Path:</strong> 1. Initiated &amp; Endorsed by HOD &rarr; 2. Forwarded to <strong>InfoCell Coordinator</strong> for Market Valuation &amp; Tier Assignment &rarr; 3. Subsequent University Sign-offs.
             </div>
           </div>
 
-          <!-- Stacked Remarks & Signature Blocks (Matching Google Doc Tables) -->
-          <div style="margin-top: 20px;">
+          <!-- Stacked Remarks & Signature Blocks (Matching Official Doc) -->
+          <div style="margin-top: 18px;">
             
             <!-- 1. HOD Block -->
             <table class="form-box-table">
@@ -231,9 +201,9 @@
                     id="justification" 
                     class="letter-input" 
                     rows="3" 
-                    placeholder="Enter academic justification or purpose of requisition..."
+                    placeholder="Enter academic justification, syllabus/lab requirements, or purpose of requisition..."
                     required
-                  >Required for up-gradation of lab desktop infrastructure to support AI/ML and Advanced Computing laboratory practicals for concurrent student batches.</textarea>
+                  ></textarea>
                 </td>
                 <td style="width: 35%; text-align: center; vertical-align: middle; background: #fafafa;">
                   <div class="stamp-badge approved" style="margin-bottom: 6px;">Digitally Endorsed</div>
@@ -252,7 +222,7 @@
                     Remarks:
                   </div>
                   <div style="font-size: 12px; color: #94a3b8; font-style: italic;">
-                    (To be entered upon technical examination by InfoCell Coordinator)
+                    (To be entered upon technical examination &amp; cost estimation by InfoCell Coordinator)
                   </div>
                 </td>
                 <td style="width: 35%; text-align: center; vertical-align: middle; background: #fafafa;">

@@ -44,7 +44,7 @@ async function createRequest(req, res, next) {
       });
     }
 
-    // Validate each item and calculate server-side derived total
+    // Validate each item (pure 7-column academic equipment requisition)
     let totalAmount = 0;
     const validatedItems = [];
 
@@ -53,16 +53,13 @@ async function createRequest(req, res, next) {
       const itemName = String(it.item_name || '').trim();
       const spec = String(it.specification || '').trim();
       const qty = parseInt(it.quantity, 10);
-      const estPrice = parseFloat(it.estimated_price);
+      const estPrice = parseFloat(it.estimated_price) || 0;
 
       if (!itemName) {
-        return res.status(400).json({ success: false, message: `Item #${i + 1} is missing a valid item name.` });
+        return res.status(400).json({ success: false, message: `Item #${i + 1} is missing a valid equipment name.` });
       }
       if (isNaN(qty) || qty <= 0) {
         return res.status(400).json({ success: false, message: `Item "${itemName}" must have a quantity greater than 0.` });
-      }
-      if (isNaN(estPrice) || estPrice < 0) {
-        return res.status(400).json({ success: false, message: `Item "${itemName}" must have a non-negative estimated price.` });
       }
 
       const lineTotal = qty * estPrice;
@@ -84,8 +81,8 @@ async function createRequest(req, res, next) {
       });
     }
 
-    // Determine the approval chain for this total amount
-    const approvalRoles = getApprovalChain(totalAmount);
+    // Initial approval chain: HOD initiates, and forwards to InfoCell Coordinator for scrutiny
+    const initialApprovalRoles = ['HOD', 'COORDINATOR'];
 
     let createdRequestId;
 
@@ -111,20 +108,18 @@ async function createRequest(req, res, next) {
         );
       }
 
-      // 3. Generate sequential approval steps
-      for (let step = 0; step < approvalRoles.length; step++) {
-        const role = approvalRoles[step];
+      // 3. Generate initial approval steps (HOD auto-signs, Coordinator queued for scrutiny)
+      for (let step = 0; step < initialApprovalRoles.length; step++) {
+        const role = initialApprovalRoles[step];
         const stepOrder = step + 1;
 
         if (role === 'HOD') {
-          // HOD automatically signs their own submission
           await client.query(
             `INSERT INTO approvals (request_id, approval_id, approver_id, approver_role, step_order, decision, remarks, decided_at)
              VALUES ($1, $2, $3, $4, $5, 'APPROVED', 'Request initiated and endorsed by HOD', NOW());`,
             [createdRequestId, stepOrder, user.user_id, 'HOD', stepOrder]
           );
         } else {
-          // Downstream authority starts as PENDING
           await client.query(
             `INSERT INTO approvals (request_id, approval_id, approver_role, step_order, decision)
              VALUES ($1, $2, $3, $4, 'PENDING');`,
@@ -136,10 +131,9 @@ async function createRequest(req, res, next) {
 
     res.status(201).json({
       success: true,
-      message: `Purchase Request #${createdRequestId} submitted successfully. Total: ₹${totalAmount.toLocaleString('en-IN')}`,
+      message: `Purchase Requisition #REQ-${String(createdRequestId).padStart(3, '0')} submitted successfully and forwarded to InfoCell Coordinator.`,
       request_id: createdRequestId,
-      total_amount: totalAmount,
-      approval_chain: approvalRoles
+      total_amount: totalAmount
     });
 
   } catch (err) {
@@ -272,8 +266,24 @@ async function getRequestDetail(req, res, next) {
   }
 }
 
+/**
+ * GET /api/requests/next-ref
+ * Returns the upcoming dynamic reference number (e.g. KLE-TECH/INFOCELL/REQ/2026/001)
+ */
+async function getNextRef(req, res, next) {
+  try {
+    const result = await query("SELECT COALESCE(MAX(request_id), 0) + 1 AS next_id FROM purchase_requests;");
+    const nextId = parseInt(result.rows[0].next_id, 10);
+    const refNo = `KLE-TECH/INFOCELL/REQ/2026/${String(nextId).padStart(3, '0')}`;
+    res.json({ success: true, next_id: nextId, ref_no: refNo });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createRequest,
   getRequests,
-  getRequestDetail
+  getRequestDetail,
+  getNextRef
 };

@@ -12,55 +12,40 @@
     <main class="app-main">
       
       <!-- Page Header -->
-      <div class="page-header">
+      <div class="page-header" style="margin-bottom: 24px;">
         <div>
-          <h1 class="page-title" id="welcome-heading">Dashboard</h1>
-          <p class="page-subtitle" id="welcome-subtext">Real-time procurement & inventory overview</p>
-        </div>
-        <div id="header-actions">
-          <!-- Dynamic action button injected by role (e.g. New Request for HOD) -->
+          <h1 class="page-title" id="welcome-heading">Welcome back</h1>
         </div>
       </div>
 
-      <!-- Live Notifications Banner (calculated dynamically on-the-fly) -->
-      <div id="notifications-container" style="display: none; margin-bottom: 24px;"></div>
-
       <!-- Key Performance Metric Cards -->
-      <div class="stats-grid">
+      <div class="stats-grid" style="margin-bottom: 28px;">
         <div class="stat-card">
           <div class="stat-label">Pending For You</div>
-          <div class="stat-value" id="stat-my-approvals">-</div>
+          <div class="stat-value" id="stat-my-approvals" style="color: var(--brand-primary);">-</div>
           <div class="stat-desc">Approvals requiring your decision</div>
         </div>
 
         <div class="stat-card">
           <div class="stat-label">Purchase Requests</div>
           <div class="stat-value" id="stat-total-requests">-</div>
-          <div class="stat-desc">Total requests across university</div>
+          <div class="stat-desc">Total requests submitted</div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-label">Awaiting Delivery</div>
-          <div class="stat-value" id="stat-active-pos">-</div>
-          <div class="stat-desc">Purchase orders currently open</div>
+          <div class="stat-label">Academic Labs Tracked</div>
+          <div class="stat-value" style="color: #0284c7;">8 Labs</div>
+          <div class="stat-desc">Labs 1 to 7 + Computing Labs</div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-label">Total Assets</div>
-          <div class="stat-value" id="stat-total-assets">-</div>
+          <div class="stat-label">Total Desktop PCs</div>
+          <div class="stat-value" id="stat-total-assets" style="color: #15803d;">286</div>
           <div class="stat-desc" id="stat-assets-desc">Managed inventory records</div>
         </div>
       </div>
 
-      <!-- Quick Action Shortcuts -->
-      <div class="card" style="padding: 20px 24px; margin-bottom: 28px;">
-        <div class="card-title" style="margin-bottom: 12px; font-size: 15px;">Quick Actions</div>
-        <div id="quick-actions-bar" style="display: flex; flex-wrap: wrap; gap: 10px;">
-          <!-- Injected dynamically based on user role -->
-        </div>
-      </div>
-
-      <!-- Recent Requests Activity Table -->
+      <!-- Recent Requests Activity Table (Placed prominently at top) -->
       <div class="card">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
           <h2 class="card-title" style="margin-bottom: 0;">Recent Purchase Requests</h2>
@@ -74,10 +59,10 @@
                 <th>Request ID</th>
                 <th>Department</th>
                 <th>Requested By</th>
-                <th>Total Value</th>
+                <th>Estimated Value</th>
                 <th>Date</th>
                 <th>Status</th>
-                <th>Action</th>
+                <th style="text-align: right;">Action</th>
               </tr>
             </thead>
             <tbody id="recent-requests-tbody">

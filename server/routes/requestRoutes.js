@@ -50,6 +50,8 @@ router.post('/', requestController.createRequest);
  */
 router.get('/', requestController.getRequests);
 
+router.get('/next-ref', requestController.getNextRef);
+
 /**
  * @swagger
  * /api/requests/{id}:

@@ -58,25 +58,9 @@ router.get('/', assetController.getAssets);
  *         description: Summary counts of working/damaged assets and by lab
  */
 router.get('/summary', assetController.getInventorySummary);
-
-/**
- * @swagger
- * /api/assets/{id}:
- *   get:
- *     summary: Get single asset by ID or asset code
- *     tags: [Inventory]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Single asset with full specifications
- *       404:
- *         description: Asset not found
- */
+router.post('/', assetController.createAsset);
+router.patch('/:id/quantity', assetController.adjustQuantity);
+router.delete('/:id', assetController.deleteAsset);
 router.get('/:id', assetController.getAssetById);
 
 module.exports = router;
