@@ -20,15 +20,24 @@ async function getAssets(req, res, next) {
     let paramIndex = 1;
 
     // Filter by lab / location
+    // Lab keys sent by frontend: 'Lab 1', 'Lab 2', 'Lab 3', 'Lab 4', 'Lab 5', 'Lab 7', 'C-Lab 1', 'C-Lab 2'
     if (lab) {
-      if (lab === 'C-Lab 1') {
-        conditions.push(`(a.location ILIKE '%Computing%' OR a.location ILIKE '%C-Lab 1%')`);
-      } else if (lab === 'C-Lab 2') {
-        conditions.push(`(a.location ILIKE '%C-Lab%' OR a.location = 'Ms. Salma M B')`);
-      } else if (lab === 'Lab 7') {
-        conditions.push(`(a.location ILIKE '%Lab-7%' OR a.location IN ('Mr. Ashok Chikaraddi', 'Mr. Pradeep Shet', 'Ms. Neha Panchal', 'Ms. Shrusti Gunjal'))`);
+      if (lab === 'Lab 1') {
+        conditions.push(`a.location ILIKE '%Lab 1%'`);
       } else if (lab === 'Lab 2') {
         conditions.push(`(a.location ILIKE '%Lab-2%' OR a.location ILIKE '%CLH%')`);
+      } else if (lab === 'Lab 3') {
+        conditions.push(`a.location ILIKE '%Lab-3%'`);
+      } else if (lab === 'Lab 4') {
+        conditions.push(`(a.location ILIKE '%LAB 4%' OR a.location ILIKE '%LAB4%')`);
+      } else if (lab === 'Lab 5') {
+        conditions.push(`(a.location ILIKE '%Lab5%')`);
+      } else if (lab === 'Lab 7') {
+        conditions.push(`(a.location ILIKE '%Lab-7%' OR a.location IN ('Mr. Ashok Chikaraddi', 'Mr. Pradeep Shet', 'Ms. Neha Panchal', 'Ms. Shrusti Gunjal'))`);
+      } else if (lab === 'C-Lab 1') {
+        conditions.push(`a.location ILIKE '%Computing%'`);
+      } else if (lab === 'C-Lab 2') {
+        conditions.push(`(a.location ILIKE '%C-Lab2%' OR a.location = 'Ms. Salma M B')`);
       } else {
         conditions.push(`a.location ILIKE $${paramIndex}`);
         params.push(`%${lab}%`);
@@ -43,9 +52,9 @@ async function getAssets(req, res, next) {
       paramIndex++;
     }
 
-    // Search by computer name or model
+    // Search by computer name, model, vendor, inward register serial number, or technical specifications
     if (search) {
-      conditions.push(`(a.asset_code ILIKE $${paramIndex} OR a.name ILIKE $${paramIndex})`);
+      conditions.push(`(a.asset_code ILIKE $${paramIndex} OR a.name ILIKE $${paramIndex} OR a.vendor_name ILIKE $${paramIndex} OR a.register_sl_no::text ILIKE $${paramIndex} OR a.specifications::text ILIKE $${paramIndex})`);
       params.push(`%${search}%`);
       paramIndex++;
     }
@@ -118,16 +127,17 @@ async function getInventorySummary(req, res, next) {
           WHEN location ILIKE '%Lab 1%' THEN 'Lab 1'
           WHEN location ILIKE '%Lab-2%' OR location ILIKE '%CLH%' THEN 'Lab 2'
           WHEN location ILIKE '%Lab-3%' THEN 'Lab 3'
-          WHEN location ILIKE '%LAB%4%' THEN 'Lab 4'
+          WHEN location ILIKE '%LAB 4%' OR location ILIKE '%LAB4%' THEN 'Lab 4'
           WHEN location ILIKE '%Lab5%' THEN 'Lab 5'
           WHEN location ILIKE '%Lab-7%' OR location IN ('Mr. Ashok Chikaraddi', 'Mr. Pradeep Shet', 'Ms. Neha Panchal', 'Ms. Shrusti Gunjal') THEN 'Lab 7'
           WHEN location ILIKE '%Computing%' THEN 'C-Lab 1'
-          WHEN location ILIKE '%C-Lab%' OR location = 'Ms. Salma M B' THEN 'C-Lab 2'
+          WHEN location ILIKE '%C-Lab2%' OR location = 'Ms. Salma M B' THEN 'C-Lab 2'
           ELSE 'Other'
         END AS lab_group,
         COUNT(*) AS count
       FROM assets
       GROUP BY 1
+      HAVING COUNT(*) > 0
       ORDER BY 1;
     `);
 

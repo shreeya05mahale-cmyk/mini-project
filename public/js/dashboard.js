@@ -12,9 +12,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = authData.user;
 
     // Personalize header
+    const roleTitle = window.formatRole ? window.formatRole(user.role) : (user.role === 'VC' ? 'Vice Chancellor' : (user.role === 'PC' ? 'Pro Chancellor' : user.role));
     document.getElementById('welcome-heading').textContent = `Welcome back, ${user.name.split(' ')[0]}`;
     document.getElementById('welcome-subtext').textContent = 
-      `Logged in as ${user.role} ${user.dept_name ? `(${user.dept_name})` : ''} • KLE Tech University`;
+      `Logged in as ${roleTitle} ${user.dept_name ? `(${user.dept_name})` : ''} • KLE Tech University`;
 
     // 2. Setup Role Quick Actions
     setupQuickActions(user);

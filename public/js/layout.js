@@ -36,6 +36,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+function formatRole(role) {
+  const map = {
+    'VC': 'Vice Chancellor',
+    'PC': 'Pro Chancellor',
+    'HOD': 'HOD',
+    'COORDINATOR': 'Coordinator',
+    'REGISTRAR': 'Registrar',
+    'ADMIN': 'Administrator',
+    'STORE': 'Store Officer'
+  };
+  return map[role] || role;
+}
+window.formatRole = formatRole;
+
 /**
  * Builds the top navigation bar with user profile and sign out
  */
@@ -57,7 +71,7 @@ function renderHeader(user) {
       <div class="user-info">
         <div class="user-name">${escapeHtml(user.name)}</div>
         <div class="user-role-dept">
-          <span class="role-pill" style="padding: 2px 8px; font-size: 11px;">${escapeHtml(user.role)}</span>
+          <span class="role-pill" style="padding: 2px 8px; font-size: 11px;">${escapeHtml(formatRole(user.role))}</span>
           ${deptDisplay}
         </div>
       </div>

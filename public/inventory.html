@@ -20,8 +20,8 @@
     }
     .filter-select, .search-input {
       padding: 8px 12px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      border-radius: 6px;
       font-size: 13px;
       background: #ffffff;
       color: var(--text-main);
@@ -67,7 +67,7 @@
     }
     .modal-card {
       background: #ffffff;
-      border-radius: var(--radius-md);
+      border-radius: 10px;
       width: 90%;
       max-width: 620px;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
@@ -78,7 +78,7 @@
     }
     .modal-header {
       padding: 18px 24px;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -117,10 +117,16 @@
       color: var(--text-subtle);
       font-weight: 600;
     }
+    .spec-val {
+      font-size: 13px;
+      color: var(--text-main);
+      font-weight: 600;
+      word-break: break-word;
+    }
     .lab-card-pill {
       background: #f8fafc;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      border-radius: 6px;
       padding: 10px 12px;
       cursor: pointer;
       text-align: center;
@@ -217,13 +223,13 @@
             <select id="lab-select" class="filter-select">
               <option value="">All Labs (286 PCs)</option>
               <option value="Lab 1">Lab 1 (43 PCs)</option>
-              <option value="Lab-2">Lab 2 (62 PCs)</option>
-              <option value="Lab-3">Lab 3 (45 PCs)</option>
-              <option value="LAB 4">Lab 4 (43 PCs)</option>
-              <option value="Lab5">Lab 5 (43 PCs)</option>
-              <option value="Lab-7">Lab 7 (46 PCs)</option>
-              <option value="Computing">C-Lab 1 (1 PC)</option>
-              <option value="C-Lab">C-Lab 2 (3 PCs)</option>
+              <option value="Lab 2">Lab 2 (62 PCs)</option>
+              <option value="Lab 3">Lab 3 (45 PCs)</option>
+              <option value="Lab 4">Lab 4 (43 PCs)</option>
+              <option value="Lab 5">Lab 5 (43 PCs)</option>
+              <option value="Lab 7">Lab 7 (46 PCs)</option>
+              <option value="C-Lab 1">C-Lab 1 (1 PC)</option>
+              <option value="C-Lab 2">C-Lab 2 (3 PCs)</option>
             </select>
           </div>
 
@@ -272,7 +278,7 @@
         </div>
 
         <!-- Pagination Controls -->
-        <div id="pagination-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-top: 1px solid var(--border-color); font-size: 13px;">
+        <div id="pagination-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 13px;">
           <button id="prev-btn" class="btn btn-secondary btn-sm" disabled>&larr; Previous</button>
           <span id="page-indicator" style="color: var(--text-subtle);">Page 1 of 1</span>
           <button id="next-btn" class="btn btn-secondary btn-sm" disabled>Next &rarr;</button>
@@ -331,7 +337,7 @@
             <span class="spec-label">Antivirus Protected</span>
             <span class="spec-val" id="m-antivirus">-</span>
           </div>
-          <div class="spec-item" style="grid-column: span 2; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
+          <div class="spec-item" style="grid-column: span 2; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);">
             <span class="spec-label" style="color: var(--brand-primary); font-weight: 700;">University Inward Register Provenance</span>
           </div>
           <div class="spec-item">

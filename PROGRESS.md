@@ -41,11 +41,15 @@ KLE Tech University IT Asset Inventory & Procurement Management System
 
 ### 3. Front-End Web Application & Design System
 - [x] Professional Academic Tech design system (`public/css/style.css`).
-- [x] Shared layout manager (`public/js/layout.js`) with dynamic role-based sidebar and topbar.
+- [x] Shared layout manager (`public/js/layout.js`) with dynamic role-based sidebar and topbar. Formatted role titles (Vice Chancellor, Pro Chancellor).
 - [x] Removed "K" brand badge from all headers per university UI styling.
-- [x] Login page (`public/login.html`) with role buttons that autofill email only, requiring manual password entry.
-- [x] Dashboard page (`public/index.html`) with dynamic metrics, on-the-fly notifications, and role quick actions.
-- [x] Inventory & Asset Registry page (`public/inventory.html`) with interactive lab overview cards with live machine counts (Lab 1: 43, Lab 2: 62, Lab 3: 45, Lab 4: 43, Lab 5: 43, Lab 7: 46, C-Labs: 4), condition filters, live search, and hardware specification modal.
+- [x] Login page (`public/login.html`) with role buttons that autofill email only, explicitly labeled with full titles "Vice Chancellor" and "Pro Chancellor".
+- [x] Dashboard page (`public/index.html`) with dynamic metrics, on-the-fly notifications, and role quick actions with full official titles.
+- [x] Inventory & Asset Registry page (`public/inventory.html` + `inventory.js`):
+  - Fixed lab filter matching for all academic labs (Lab 1: 43, Lab 2: 62, Lab 3: 45, Lab 4: 43, Lab 5: 43, Lab 7: 46, C-Lab 1: 1, C-Lab 2: 3 = 286 PCs total).
+  - Fixed specification modal click breaking on double-quote characters in monitor dimensions (e.g. `18.5"`) by implementing safe in-memory index event delegation.
+  - Added full-text specification search across CPU models, generations (e.g. "10th", "i5"), OS, vendor, and register numbers.
+  - Fixed undefined CSS variables (`--border-color`, `--radius-sm/md`) to restore styling across inputs, modals, and pagination controls.
 
 ### 4. Institutional Requisition Letter & Multi-Tier Approvals (Engine 1)
 - [x] **Official Letter Template (`/request-new.html`)**:
