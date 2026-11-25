@@ -222,6 +222,12 @@
       const auth = await API.getCurrentUser();
       currentUserRole = auth.user.role;
 
+      // HOD originates purchase requests and does not endorse approvals
+      if (currentUserRole === 'HOD') {
+        window.location.href = '/requests.html';
+        return;
+      }
+
       await loadPendingApprovals();
 
       document.getElementById('modal-close-btn').addEventListener('click', closeDecisionModal);

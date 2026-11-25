@@ -20,10 +20,16 @@
 
       <!-- Key Performance Metric Cards -->
       <div class="stats-grid" style="margin-bottom: 28px;">
-        <div class="stat-card">
+        <div class="stat-card" id="stat-card-pending">
           <div class="stat-label">Pending For You</div>
           <div class="stat-value" id="stat-my-approvals" style="color: var(--brand-primary);">-</div>
           <div class="stat-desc">Approvals requiring your decision</div>
+        </div>
+
+        <div class="stat-card" id="stat-card-dept" style="display: none;">
+          <div class="stat-label">Department</div>
+          <div class="stat-value" style="color: var(--brand-primary); font-size: 20px; font-weight: 700;">CSE</div>
+          <div class="stat-desc">Computer Science &amp; Engineering</div>
         </div>
 
         <div class="stat-card">

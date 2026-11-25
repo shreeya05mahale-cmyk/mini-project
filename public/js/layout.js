@@ -104,24 +104,24 @@ function renderSidebar(user, notifs) {
     {
       title: 'Dashboard',
       url: '/index.html',
-      roles: ['ADMIN', 'HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC']
+      roles: ['HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC']
     },
     {
       title: 'Purchase Requests',
       url: '/requests.html',
-      roles: ['ADMIN', 'HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC']
+      roles: ['HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC']
     },
     {
       title: 'Approvals Inbox',
       url: '/approvals.html',
-      roles: ['ADMIN', 'HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC'],
+      roles: ['COORDINATOR', 'REGISTRAR', 'VC', 'PC'],
       badge: notifs.pendingApprovals > 0 ? notifs.pendingApprovals : null,
       badgeClass: 'nav-badge-pending'
     },
     {
       title: 'Inventory & Registry',
       url: '/inventory.html',
-      roles: ['ADMIN', 'HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC']
+      roles: ['HOD', 'COORDINATOR', 'REGISTRAR', 'VC', 'PC']
     }
   ];
 

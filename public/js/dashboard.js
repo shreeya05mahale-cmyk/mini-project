@@ -10,9 +10,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     const authData = await API.getCurrentUser();
     const user = authData.user;
 
-    // Header greeting
-    const firstName = user.name ? user.name.split(' ')[0] : 'User';
-    document.getElementById('welcome-heading').textContent = `Welcome back, ${firstName}`;
+    // Header greeting with official role title
+    const roleTitleMap = {
+      'HOD': 'HOD',
+      'COORDINATOR': 'Coordinator',
+      'REGISTRAR': 'Registrar',
+      'VC': 'Vice Chancellor',
+      'PC': 'Pro Chancellor',
+      'ADMIN': 'Administrator'
+    };
+    const displayRole = roleTitleMap[user.role] || user.role;
+    document.getElementById('welcome-heading').textContent = `Welcome back, ${displayRole}`;
+
+    // For HOD: HOD only originates requests, so hide pending approvals and show department card
+    if (user.role === 'HOD') {
+      const pendingCard = document.getElementById('stat-card-pending');
+      if (pendingCard) pendingCard.style.display = 'none';
+      const deptCard = document.getElementById('stat-card-dept');
+      if (deptCard) deptCard.style.display = 'block';
+    }
 
     // 2. Load Live Dashboard Stats & Recent Activity
     await loadStats();
