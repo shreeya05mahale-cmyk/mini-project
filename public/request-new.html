@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Approval Request Letter - KLE Tech Asset & Procurement</title>
+  <title>Procurement Requisition Form - KLE Tech InfoCell</title>
   <link rel="stylesheet" href="/css/style.css">
   <style>
     .letter-input {
       width: 100%;
       border: 1px solid #cbd5e1;
       border-radius: 4px;
-      padding: 6px 10px;
-      font-size: 13px;
+      padding: 6px 8px;
+      font-size: 12px;
       font-family: inherit;
       background: #ffffff;
       outline: none;
@@ -23,13 +23,12 @@
     }
     .letter-input-inline {
       border: none;
-      border-bottom: 1.5px dashed #64748b;
+      border-bottom: 1.5px dashed #475569;
       border-radius: 0;
-      padding: 2px 4px;
-      font-size: 14px;
+      padding: 2px 6px;
+      font-size: 13.5px;
       font-weight: 600;
       color: #0f172a;
-      width: calc(100% - 70px);
       background: transparent;
       outline: none;
     }
@@ -45,8 +44,8 @@
       border-left: 4px solid #2563eb;
       padding: 12px 18px;
       border-radius: 6px;
-      margin-top: 24px;
-      margin-bottom: 24px;
+      margin-top: 20px;
+      margin-bottom: 20px;
     }
     .btn-remove-row {
       background: none;
@@ -61,16 +60,26 @@
     .btn-remove-row:hover {
       background: #fee2e2;
     }
+    .form-box-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+    .form-box-table td {
+      border: 1px solid #0f172a;
+      padding: 10px 14px;
+      vertical-align: top;
+    }
   </style>
 </head>
 <body>
   <div id="app-container" class="app-wrapper">
     <main class="app-main">
 
-      <div class="page-header" style="max-width: 960px; margin: 0 auto 20px auto;">
+      <div class="page-header" style="max-width: 1020px; margin: 0 auto 20px auto;">
         <div>
-          <h1 class="page-title">Departmental Purchase Requisition</h1>
-          <p class="page-subtitle">Official Letterhead Template &bull; Digital Approval Flow</p>
+          <h1 class="page-title">Procurement Requisition Form</h1>
+          <p class="page-subtitle">Official InfoCell Requisition Template &bull; KLE Technological University</p>
         </div>
         <div>
           <a href="/requests.html" class="btn btn-secondary btn-sm">&larr; Back to Requests</a>
@@ -78,171 +87,118 @@
       </div>
 
       <!-- Institutional Guidance -->
-      <div style="max-width: 960px; margin: 0 auto 20px auto; padding: 12px 18px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 13px; color: #1e40af; display: flex; justify-content: space-between; align-items: center;">
+      <div style="max-width: 1020px; margin: 0 auto 20px auto; padding: 12px 18px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 13px; color: #1e40af; display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <strong>🏛️ Official Format:</strong> This form follows the KLE Tech <em>Approval Request Letter</em> format. Upon submission, it is digitally signed and forwarded to the <strong>InfoCell Coordinator</strong> for technical scrutiny.
+          <strong>🏛️ Official InfoCell Template:</strong> Modeled after the official university requisition document. Upon submission, it is digitally signed and forwarded to the <strong>InfoCell Coordinator</strong> for technical scrutiny.
         </div>
       </div>
 
       <form id="request-form">
         <!-- The Official Letter Sheet -->
-        <div class="letter-sheet">
+        <div class="letter-sheet" style="max-width: 1020px;">
           
-          <!-- University Letterhead -->
-          <div class="letterhead-header">
-            <div class="letterhead-uni-name">KLE Technological University</div>
-            <div class="letterhead-subtext">
-              (Established under Karnataka Act No. 22 of 2013)<br>
-              B. V. Bhoomaraddi Campus, Vidyanagar, Hubballi - 580 031, Karnataka (India)<br>
-              Website: www.kletech.ac.in &bull; Email: info@kletech.ac.in
+          <!-- Top Header: Logo/Uni Name Left + INFOCELL Right -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 14px; margin-bottom: 18px;">
+            <div>
+              <div style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px;">KLE TECHNOLOGICAL UNIVERSITY</div>
+              <div style="font-size: 12px; color: #475569; margin-top: 2px;">B. V. Bhoomaraddi Campus, Vidyanagar, Hubballi - 580 031, Karnataka (India)</div>
+            </div>
+            <div style="font-family: 'Times New Roman', serif; font-size: 28px; font-weight: 800; letter-spacing: 3px; color: #1e3a8a;">
+              INFOCELL
+            </div>
+          </div>
+
+          <!-- Centered Form Title Underlined -->
+          <div style="text-align: center; margin-bottom: 18px;">
+            <span style="font-size: 16px; font-weight: 800; text-decoration: underline; letter-spacing: 1.5px; color: #0f172a; text-transform: uppercase;">
+              PROCUREMENT REQUISITION FORM
+            </span>
+          </div>
+
+          <!-- Date -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 13.5px;">
+            <div>
+              <span>Ref No: </span>
+              <strong style="font-family: monospace; color: #0f172a;">KLE-TECH/INFOCELL/REQ/2026/NEW</strong>
             </div>
             <div>
-              <span class="letter-title-badge">APPROVAL REQUEST LETTER</span>
+              <span style="font-weight: 600;">Date: </span>
+              <strong id="current-date-display" style="border-bottom: 1px dotted #334155; padding: 0 8px;"></strong>
             </div>
           </div>
 
-          <!-- Ref No & Date -->
-          <div class="letter-meta-row">
-            <div>
-              <span>Ref. No.: </span>
-              <strong id="ref-no-display" style="font-family: monospace; color: #0f172a;">KLE-TECH/INFOCELL/REQ/2026/NEW</strong>
-            </div>
-            <div>
-              <span>Date: </span>
-              <strong id="current-date-display"></strong>
-            </div>
-          </div>
-
-          <!-- Addressing Box (To / From) -->
-          <div class="letter-address-section">
-            <div class="address-box">
-              <div class="address-box-label">TO:</div>
-              <strong>The Registrar</strong><br>
-              KLE Technological University<br>
-              Hubballi - 580031<br>
-              <div style="margin-top: 6px; color: #2563eb; font-weight: 700;">
-                Through: The Coordinator, InfoCell
-              </div>
+          <!-- From & To Section -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 18px; font-size: 13px;">
+            <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px 16px;">
+              <div style="font-weight: 700; color: #0f172a; margin-bottom: 4px;">From,</div>
+              <div id="hod-name-display" style="font-weight: 700;">Dr. CS HOD</div>
+              <div>Head of the Department</div>
+              <div id="dept-name-display">Department of Computer Science & Engineering</div>
+              <div>KLE Technological University, Hubballi</div>
             </div>
 
-            <div class="address-box">
-              <div class="address-box-label">FROM:</div>
-              <strong id="hod-name-display">Dr. CS HOD</strong><br>
-              Professor & Head of Department<br>
-              <span id="dept-name-display">Department of Computer Science & Engineering</span><br>
-              KLE Technological University
+            <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px 16px;">
+              <div style="font-weight: 700; color: #0f172a; margin-bottom: 4px;">To,</div>
+              <div style="font-weight: 700;">The Coordinator</div>
+              <div>Information Services Cell,</div>
+              <div>KLE Technological University,</div>
+              <div>Hubballi &ndash; 580031</div>
             </div>
           </div>
 
-          <!-- Subject Line -->
-          <div class="letter-subject-block">
-            <strong>Subject: </strong>
-            <input 
-              type="text" 
-              id="request-subject" 
-              class="letter-input-inline" 
-              placeholder="e.g., Approval for procurement of Core i7 Desktop Systems for CSE Lab 3" 
-              required
-            >
+          <!-- Salutation and Expenditure Head Line -->
+          <div style="margin-bottom: 18px; font-size: 13.5px; line-height: 1.7;">
+            <div><strong>Sir,</strong></div>
+            <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-top: 4px;">
+              <span>Kindly arrange to provide the following, the approximate budget &amp; expenditure head:</span>
+              <input 
+                type="text" 
+                id="expenditure-head" 
+                class="letter-input-inline" 
+                style="flex: 1; min-width: 280px;" 
+                placeholder="e.g., CSE Dept Computing Infrastructure & Lab Modernization Fund" 
+                value="CSE Dept Computing Infrastructure & Lab Modernization Fund"
+                required
+              >
+            </div>
           </div>
 
-          <!-- Salutation & Justification Prose -->
-          <div class="letter-salutation">Sir / Madam,</div>
-          
-          <div class="letter-prose">
-            With reference to the subject cited above, the following equipment / hardware items are required for our departmental computing infrastructure. The detailed specifications, quantities, estimated unit costs, and budget head allocation are submitted herewith for administrative approval.
-          </div>
-
-          <!-- Purpose / Justification Box -->
-          <div style="margin-bottom: 22px;">
-            <label style="display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 6px;">
-              Detailed Purpose / Academic Justification *
-            </label>
-            <textarea 
-              id="justification" 
-              class="letter-input" 
-              rows="3" 
-              placeholder="State the academic, laboratory, or research requirement (e.g. Upgradation of 15 obsolete systems in Lab 3 to support AI/ML curriculum and concurrent practical examinations)."
-              required
-            ></textarea>
-          </div>
-
-          <!-- Table 1: Equipment Details -->
-          <div style="margin-bottom: 22px;">
+          <!-- Materials / Equipment Table -->
+          <div style="margin-bottom: 18px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <div style="font-size: 13px; font-weight: 800; color: #0f172a; text-transform: uppercase;">
-                1. Description of Required Items & Estimated Outlay
+              <div style="font-size: 12.5px; font-weight: 700; color: #0f172a; text-transform: uppercase;">
+                Equipment / Material Requisition Items
               </div>
               <button type="button" id="add-item-btn" class="btn btn-secondary btn-sm" style="font-size: 11px;">
                 + Add Item
               </button>
             </div>
 
-            <table class="letter-table">
+            <table class="letter-table" style="border: 1px solid #0f172a;">
               <thead>
-                <tr>
-                  <th style="width: 5%; text-align: center;">Sl.</th>
-                  <th style="width: 25%;">Item Name *</th>
-                  <th style="width: 33%;">Technical Specification</th>
-                  <th style="width: 10%; text-align: center;">Qty *</th>
-                  <th style="width: 13%; text-align: right;">Unit Price (₹) *</th>
-                  <th style="width: 14%; text-align: right;">Total (₹)</th>
-                  <th style="width: 5%;"></th>
+                <tr style="background: #bfbfbf; color: #000000; border-bottom: 1px solid #0f172a;">
+                  <th style="width: 4%; text-align: center; border: 1px solid #0f172a; padding: 6px 4px;">Sl. No.</th>
+                  <th style="width: 17%; border: 1px solid #0f172a; padding: 6px 6px;">Details of material/ equipment *</th>
+                  <th style="width: 20%; border: 1px solid #0f172a; padding: 6px 6px;">Specification</th>
+                  <th style="width: 6%; text-align: center; border: 1px solid #0f172a; padding: 6px 4px;">Qty *</th>
+                  <th style="width: 10%; text-align: right; border: 1px solid #0f172a; padding: 6px 6px;">Approx Price (₹) *</th>
+                  <th style="width: 10%; text-align: right; border: 1px solid #0f172a; padding: 6px 6px;">Total (₹)</th>
+                  <th style="width: 11%; border: 1px solid #0f172a; padding: 6px 6px;">Location</th>
+                  <th style="width: 11%; border: 1px solid #0f172a; padding: 6px 6px;">Purpose</th>
+                  <th style="width: 8%; border: 1px solid #0f172a; padding: 6px 6px;">ISR No. & Date *</th>
+                  <th style="width: 3%; border: 1px solid #0f172a; padding: 6px 2px;"></th>
                 </tr>
               </thead>
               <tbody id="items-tbody">
-                <!-- Injected by JS -->
+                <!-- Injected dynamically by JS -->
               </tbody>
               <tfoot>
-                <tr>
-                  <td colspan="5" style="text-align: right; font-weight: 800;">Total Estimated Outlay:</td>
-                  <td id="grand-total-display" style="text-align: right; font-weight: 800; font-family: monospace; font-size: 14px; color: #0f172a;">₹0.00</td>
-                  <td></td>
+                <tr style="border-top: 1px solid #0f172a; background: #f8fafc;">
+                  <td colspan="5" style="text-align: right; font-weight: 800; border: 1px solid #0f172a; padding: 8px;">Total Estimated Outlay:</td>
+                  <td id="grand-total-display" style="text-align: right; font-weight: 800; font-family: monospace; font-size: 13.5px; color: #0f172a; border: 1px solid #0f172a; padding: 8px;">₹0.00</td>
+                  <td colspan="4" style="border: 1px solid #0f172a;"></td>
                 </tr>
               </tfoot>
-            </table>
-          </div>
-
-          <!-- Table 2: Budget Allocation (KLE Tech Official Format) -->
-          <div style="margin-bottom: 22px;">
-            <div style="font-size: 13px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 8px;">
-              2. Budget Allocation & Account Head Verification
-            </div>
-            <table class="letter-table" id="budget-table">
-              <thead>
-                <tr>
-                  <th style="width: 5%; text-align: center;">Sl.</th>
-                  <th style="width: 22%;">Category of Expenditure</th>
-                  <th style="width: 23%;">Head of Account</th>
-                  <th style="width: 13%; text-align: right;">Budget Sanctioned (₹)</th>
-                  <th style="width: 12%; text-align: right;">Expenses till Date (₹)</th>
-                  <th style="width: 12%; text-align: right;">Committed (₹)</th>
-                  <th style="width: 13%; text-align: right;">Available Balance (₹)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="text-align: center;">1</td>
-                  <td>
-                    <input type="text" id="budget-category" class="letter-input" value="Capital Equipment / Lab Infra" required>
-                  </td>
-                  <td>
-                    <input type="text" id="budget-head" class="letter-input" value="IT Hardware & Lab Upgrades" required>
-                  </td>
-                  <td>
-                    <input type="number" id="budget-sanctioned" class="letter-input" style="text-align: right;" value="2500000" required>
-                  </td>
-                  <td>
-                    <input type="number" id="budget-spent" class="letter-input" style="text-align: right;" value="850000" required>
-                  </td>
-                  <td>
-                    <input type="number" id="budget-committed" class="letter-input" style="text-align: right;" value="210000" required>
-                  </td>
-                  <td style="text-align: right; font-family: monospace; font-weight: 700;" id="budget-available-display">
-                    ₹14,40,000.00
-                  </td>
-                </tr>
-              </tbody>
             </table>
           </div>
 
@@ -261,21 +217,82 @@
             </div>
           </div>
 
-          <!-- Digital Signature & Action Footer -->
-          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: flex-end;">
-            <div>
-              <div class="stamp-badge approved">Digitally Endorsed by HOD</div>
-              <div style="font-size: 13px; font-weight: 700; color: #0f172a;" id="sign-hod-name">Dr. CS HOD</div>
-              <div style="font-size: 11px; color: #64748b;">Head of Department &bull; CSE</div>
-              <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">Timestamp: Attached on submission</div>
-            </div>
+          <!-- Stacked Remarks & Signature Blocks (Matching Google Doc Tables) -->
+          <div style="margin-top: 20px;">
+            
+            <!-- 1. HOD Block -->
+            <table class="form-box-table">
+              <tr>
+                <td style="width: 65%;">
+                  <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 4px;">
+                    Remarks: *
+                  </label>
+                  <textarea 
+                    id="justification" 
+                    class="letter-input" 
+                    rows="3" 
+                    placeholder="Enter academic justification or purpose of requisition..."
+                    required
+                  >Required for up-gradation of lab desktop infrastructure to support AI/ML and Advanced Computing laboratory practicals for concurrent student batches.</textarea>
+                </td>
+                <td style="width: 35%; text-align: center; vertical-align: middle; background: #fafafa;">
+                  <div class="stamp-badge approved" style="margin-bottom: 6px;">Digitally Endorsed</div>
+                  <div style="font-size: 13px; font-weight: 700; color: #0f172a;" id="sign-hod-name">Dr. CS HOD</div>
+                  <div style="font-size: 11px; font-weight: 600; color: #475569; margin-top: 4px;">Seal &amp; Signature of the HoD</div>
+                  <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">Timestamp attached on submit</div>
+                </td>
+              </tr>
+            </table>
 
-            <div style="display: flex; gap: 12px;">
-              <a href="/requests.html" class="btn btn-secondary">Cancel</a>
-              <button type="submit" id="submit-btn" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700;">
-                Endorse & Submit Requisition &rarr;
-              </button>
-            </div>
+            <!-- 2. Infocell Coordinator Block Preview -->
+            <table class="form-box-table" style="opacity: 0.75;">
+              <tr>
+                <td style="width: 65%;">
+                  <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">
+                    Remarks:
+                  </div>
+                  <div style="font-size: 12px; color: #94a3b8; font-style: italic;">
+                    (To be entered upon technical examination by InfoCell Coordinator)
+                  </div>
+                </td>
+                <td style="width: 35%; text-align: center; vertical-align: middle; background: #fafafa;">
+                  <div style="font-size: 12px; font-weight: 600; color: #475569;">Signature of Infocell Coordinator</div>
+                  <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">Pending Stage 1 Scrutiny</div>
+                </td>
+              </tr>
+            </table>
+
+            <!-- 3. Registrar Block Preview -->
+            <table class="form-box-table" style="opacity: 0.75;">
+              <tr>
+                <td style="width: 65%;">
+                  <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">
+                    Remarks:
+                  </div>
+                  <div style="font-size: 12px; color: #94a3b8; font-style: italic;">
+                    (To be recorded upon administrative clearance by Registrar)
+                  </div>
+                </td>
+                <td style="width: 35%; text-align: center; vertical-align: middle; background: #fafafa;">
+                  <div style="font-size: 12px; font-weight: 600; color: #475569;">Signature of the Registrar</div>
+                  <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">Pending Administrative Sanction</div>
+                </td>
+              </tr>
+            </table>
+
+          </div>
+
+          <!-- Official Document Footnote -->
+          <div style="margin-top: 14px; font-size: 11px; color: #475569; font-style: italic;">
+            * Note: ISR number and Date of Purchase details field is mandatory for repair/ replacement of consumables/equipments.
+          </div>
+
+          <!-- Submit Buttons -->
+          <div style="margin-top: 24px; padding-top: 18px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: flex-end; gap: 12px;">
+            <a href="/requests.html" class="btn btn-secondary">Cancel</a>
+            <button type="submit" id="submit-btn" class="btn btn-primary" style="padding: 10px 24px; font-weight: 700;">
+              Endorse &amp; Submit Requisition &rarr;
+            </button>
           </div>
 
         </div>

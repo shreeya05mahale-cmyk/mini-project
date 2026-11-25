@@ -72,6 +72,9 @@ CREATE TABLE request_items (
     specification TEXT,
     quantity INT NOT NULL CHECK (quantity > 0),
     estimated_price NUMERIC(12, 2) NOT NULL CHECK (estimated_price >= 0),
+    location VARCHAR(100),
+    purpose TEXT,
+    isr_no_and_date VARCHAR(150),
     PRIMARY KEY (request_id, item_id)
 );
 

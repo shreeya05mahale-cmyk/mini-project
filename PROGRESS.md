@@ -52,12 +52,19 @@ KLE Tech University IT Asset Inventory & Procurement Management System
   - Fixed undefined CSS variables (`--border-color`, `--radius-sm/md`) to restore styling across inputs, modals, and pagination controls.
 
 ### 4. Institutional Requisition Letter & Multi-Tier Approvals (Engine 1)
-- [x] **Official Letter Template (`/request-new.html`)**:
-  - Exact match of the university's physical **"APPROVAL REQUEST LETTER"** (`documents/WhatsApp Image 2026-11-19 at 11.08.12.jpeg`).
-  - Letterhead (Established under Karnataka Act No. 22 of 2013, Hubballi), Ref No, Date.
-  - To: Registrar (Through InfoCell Coordinator), From: Head of Department.
-  - Dynamic line items description table with automated valuation calculations.
-  - Official 6-column Budget Allocation & Head of Account table with live available balance calculation.
+- [x] **Official InfoCell Form Template (`/request-new.html`)**:
+  - Exact match of the university's official **"PROCUREMENT REQUISITION FORM"** (`https://tinyurl.com/Procurement-Form2026`).
+  - Top header: KLE Technological University (left) & bold **INFOCELL** heading (right).
+  - Centered underlined title: **PROCUREMENT REQUISITION FORM**.
+  - Ref No, Date, From (Head of the Department, CSE), To (The Coordinator, Information Services Cell, Hubballi).
+  - Approximate Budget & Expenditure Head field.
+  - Official 7-column equipment table: Sl. No., Details of material/equipment, Specification, Qty, Approx Unit Price, Location, Purpose, ISR No. & Date of Purchase.
+  - Stacked remarks & signature blocks matching document:
+    - Block 1: Remarks (left) + Seal & Signature of the HoD (right)
+    - Block 2: Remarks (left) + Signature of Infocell Coordinator (right)
+    - Block 3: Remarks (left) + Signature of the Registrar (right)
+    - (+ Vice Chancellor and Pro Chancellor blocks for Tier 2 and Tier 3 thresholds).
+  - Mandatory footnote: *Note: ISR number and Date of Purchase details field is mandatory for repair/ replacement of consumables/equipments.*
 - [x] **Hierarchical Approval Routing Engine (`server/config/approvalRules.js`)**:
   - Tier 1 ($\le$ ₹50,000): HOD $\rightarrow$ Coordinator $\rightarrow$ Registrar
   - Tier 2 (> ₹50,000 and $\le$ ₹2,00,000): HOD $\rightarrow$ Coordinator $\rightarrow$ Registrar $\rightarrow$ Vice Chancellor

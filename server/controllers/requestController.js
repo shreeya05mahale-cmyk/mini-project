@@ -68,12 +68,19 @@ async function createRequest(req, res, next) {
       const lineTotal = qty * estPrice;
       totalAmount += lineTotal;
 
+      const loc = String(it.location || '').trim();
+      const purp = String(it.purpose || '').trim();
+      const isr = String(it.isr_no_and_date || '').trim();
+
       validatedItems.push({
         item_id: i + 1,
         item_name: itemName,
         specification: spec,
         quantity: qty,
-        estimated_price: estPrice
+        estimated_price: estPrice,
+        location: loc,
+        purpose: purp,
+        isr_no_and_date: isr
       });
     }
 
@@ -98,9 +105,9 @@ async function createRequest(req, res, next) {
       // 2. Insert line items
       for (const it of validatedItems) {
         await client.query(
-          `INSERT INTO request_items (request_id, item_id, item_name, specification, quantity, estimated_price)
-           VALUES ($1, $2, $3, $4, $5, $6);`,
-          [createdRequestId, it.item_id, it.item_name, it.specification, it.quantity, it.estimated_price]
+          `INSERT INTO request_items (request_id, item_id, item_name, specification, quantity, estimated_price, location, purpose, isr_no_and_date)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
+          [createdRequestId, it.item_id, it.item_name, it.specification, it.quantity, it.estimated_price, it.location, it.purpose, it.isr_no_and_date]
         );
       }
 
